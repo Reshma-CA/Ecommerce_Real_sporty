@@ -1,0 +1,46 @@
+
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Admin Dashboard
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Admin Pannel
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+<h1> Sales Graph </h1>
+<img alt="image" src="{% static 'img\pics\chart1.jpg' %}" width = "400px" class="img-fluid">
+
+            
+{% endblock page_content %}
+
+<!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+
+<!-- BLOCK FOR CUSTOM JS -->
+
+{% block custom_js %}
+{% endblock custom_js %}
+
+  <!-- END BLOCK FOR CUSTOM JS -->
+
+
