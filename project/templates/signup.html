@@ -25,44 +25,52 @@
 					<h1 class="text-center mb-4">Sign Up</h1>
 				</div>
 				<div class="card-body">
-					<form action="" method="POST">
+					<form action="" method="POST" >
 						{% csrf_token %}
 						<div class="form-group">
 							<label for="email">Username</label>
-							<input type="text" value="{{username}}" class="form-control" id="email" placeholder="Enter Username" name="username" Required>
-							
+							<input type="text" value="{{username}}" class="form-control" id="username" onfocus="border:1px solid green;" placeholder="Enter Username" name="username" onkeyup="validateUsername()">
+							<div id="username-error"></div>
+
+
 						</div>
 						<div class="form-group">
 							<label for="email">Name</label>
-							<input type="text" value="{{name}}" class="form-control" id="email" placeholder="Enter Name" name="name" Required>
-							
+							<input type="text" value="{{name}}" class="form-control" id="name" onfocus="border:1px solid green;" placeholder="Enter Name" name="name" onkeyup="Validatename()">
+							<div id="name-error"></div>
+
 						</div>
 						<div class="form-group">
 							<label for="email">Email address</label>
-							<input type="email" value="{{email}}" class="form-control" id="email" placeholder="Enter email" name="email" Required>
-							
+							<input type="email" value="{{email}}" class="form-control" id="email" onfocus="border:1px solid green;" placeholder="Enter email" name="email" onkeyup="validateEmail()">
+							<div id="email-error"></div>
+
 						</div>
 						<div class="form-group">
 							<label for="email">Phone Number</label>
-							<input type="text" value="{{phonenumber}}" class="form-control" id="email" placeholder="Enter contact number" name="phonenumber" Required>
-							
+							<input type="text" value="{{phonenumber}}" class="form-control" id="phonenumber" onfocus="border:1px solid green;" placeholder="Enter contact number" name="phonenumber" onkeyup="validatePhone()">
+							<div id="phonenumber-error"></div>
+
 						</div>
 						<div class="form-group">
 							<label for="password">Password</label>
-							<input type="password" value="{{password}}" class="form-control" id="password" placeholder="Enter Password" name="password" Required>
-						
+							<input type="password" value="{{password}}" class="form-control" id="password" onfocus="border:1px solid green;" placeholder="Enter Password" name="password" onkeyup="validatepassword()">
+						    <div id="password-error"></div>
+
 						</div>
 						<div class="form-group">
 							<label for="password">Re-Enter Password</label>
-							<input type="password" value="{{repassword}}" class="form-control" id="password" placeholder="Re- enter Password" name="repassword" Required>
-							
+							<input type="password" value="{{repassword}}" class="form-control" id="re-password" onfocus="border:1px solid green;" placeholder="Re- enter Password" name="repassword" onkeyup="validateConfirmPassword()">
+							<div id="repassword-error"></div>
+
 						</div>
 						<div class="justify-content-center ">
-							<button type="submit" class="btn btn-primary">Submit</button>
+							<button type="submit" class="btn btn-primary" >Submit</button>
+							{% comment %} <div id="submitError"></div> {% endcomment %}
 
 						</div>
 
-						<span style="color: red">{{msg1}}</span>
+						{% comment %} <span style="color: red">{{msg1}}</span> {% endcomment %}
 						
 						
 						<div >

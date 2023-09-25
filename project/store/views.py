@@ -10,6 +10,10 @@ from django.http import HttpResponse
 from store.models import Customers
 from django.contrib.auth.decorators import login_required
 import re
+import random
+from twilio.rest import Client
+
+
 
 # Create your views here.
 
@@ -27,11 +31,12 @@ def index(request):
      
 
 
-     
+    
+    
 
 def Register(request):
       if 'cusername' in request.session:
-            return redirect(index)
+            return redirect('index')
       if request.method=="POST":
         username=request.POST.get("username")
         email=request.POST.get("email")
@@ -51,9 +56,11 @@ def Register(request):
         elif len(username)>10:
             msg1="Username can only have at the most 10 characters"
         
-        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        elif not isinstance(email, str):
+            msg1 = "Invalid Email: Email must be a string"
             
-            msg1="Invalid Email"
+        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            msg1 = "Invalid Email"
 
         elif len(password)<6:
             msg1="Password must altleast contain 6 characters"
@@ -68,7 +75,7 @@ def Register(request):
             msg1="Phone number should have ten digits" 
 
         elif not name.isalpha():
-            msg1="Address should only contain alphabets"
+            msg1="Name should only contain alphabets"
 
         if msg1:
 
@@ -107,6 +114,41 @@ def home(request):
 def logoutuser(request):
     logout(request)
     return redirect ('index')
+
+def generate_otp():
+    return str(random.randint(1000, 9999))
+
+def otplogin(request):
+    # if "username" in request.session:
+    #     return redirect(loggedin)
+    
+    if request.method=="POST":
+        phonenumber=request.POST["phonenumber"]
+        cust=Customers.objects.filter(phonenumber=phonenumber).count()
+        if cust==0:
+            error="Phonenumber not registered"
+            return render(request,"store/otplogin.html",{"error":error})
+        else:
+            
+            otp = generate_otp()
+            
+            request.session['U_otp'] = otp
+            request.session['U_phone'] = phonenumber
+            
+            send_otp(phonenumber, otp)
+            
+            return redirect('otp_veryfy')
+        
+
+    return render(request,"otp_ph_login.html")
+
+    
+
+
+
+def otp_verify(request):
+    return render(request,"otp_veryfy.html")
+
 
 def category_products(request,id):
      
