@@ -22,7 +22,7 @@
 		<div class="col-md-6">
 			<div class="card">
 				<div class="card-header flex-c-m p-lr-10 trans-04 signupdesign">
-					<h1 class="text-center mb-4">Sign Up</h1>
+					<h1 style ="color:blue; font-family: sans-serif;">Sign Up</h1>
 				</div>
 				<div class="card-body">
 					<form action="" method="POST" >
@@ -31,6 +31,9 @@
 							<label for="email">Username</label>
 							<input type="text" value="{{username}}" class="form-control" id="username" onfocus="border:1px solid green;" placeholder="Enter Username" name="username" onkeyup="validateUsername()">
 							<div id="username-error"></div>
+							{% if error and "username" in error %}
+							<span style="color: red">{{error.username}}</span>
+							{% endif %}
 
 
 						</div>
@@ -38,35 +41,54 @@
 							<label for="email">Name</label>
 							<input type="text" value="{{name}}" class="form-control" id="name" onfocus="border:1px solid green;" placeholder="Enter Name" name="name" onkeyup="Validatename()">
 							<div id="name-error"></div>
+							{% if error and "name" in error %}
+							<span style="color: red">{{error.name}}</span>
+							{% endif %}
 
 						</div>
 						<div class="form-group">
 							<label for="email">Email address</label>
 							<input type="email" value="{{email}}" class="form-control" id="email" onfocus="border:1px solid green;" placeholder="Enter email" name="email" onkeyup="validateEmail()">
 							<div id="email-error"></div>
+							{% if error and "email" in error %}
+							<span style="color: red">{{error.email}}</span>
+							{% endif %}
+
 
 						</div>
 						<div class="form-group">
 							<label for="email">Phone Number</label>
-							<input type="text" value="{{phonenumber}}" class="form-control" id="phonenumber" onfocus="border:1px solid green;" placeholder="Enter contact number" name="phonenumber" onkeyup="validatePhone()">
+							<input type="number" value="{{phonenumber}}" class="form-control" id="phonenumber" onfocus="border:1px solid green;" placeholder="Enter contact number" name="phonenumber" onkeyup="validatePhone()">
 							<div id="phonenumber-error"></div>
+							{% if error and "phonenumber" in error %}
+							<span style="color: red">{{error.phonenumber}}</span>
+							{% endif %}
 
 						</div>
 						<div class="form-group">
 							<label for="password">Password</label>
 							<input type="password" value="{{password}}" class="form-control" id="password" onfocus="border:1px solid green;" placeholder="Enter Password" name="password" onkeyup="validatepassword()">
 						    <div id="password-error"></div>
+							{% if error and "password" in error %}
+							<span style="color: red">{{error.password}}</span>
+							{% endif %}
 
 						</div>
 						<div class="form-group">
 							<label for="password">Re-Enter Password</label>
 							<input type="password" value="{{repassword}}" class="form-control" id="re-password" onfocus="border:1px solid green;" placeholder="Re- enter Password" name="repassword" onkeyup="validateConfirmPassword()">
 							<div id="repassword-error"></div>
+							{% if error and "repassword" in error %}
+							<span style="color: red">{{error.repassword}}</span>
+							{% endif %}
 
 						</div>
 						<div class="justify-content-center ">
 							<button type="submit" class="btn btn-primary" >Submit</button>
-							{% comment %} <div id="submitError"></div> {% endcomment %}
+							
+							
+							
+							
 
 						</div>
 
@@ -82,6 +104,8 @@
             
 
 					</form>
+
+					{{msg}}
 				</div>
 			</div>
 		</div>

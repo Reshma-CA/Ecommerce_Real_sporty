@@ -48,16 +48,7 @@ function validateUsername() {
         console.log(usernameError)
         return false;
     }
-    if (!/^[a-zA-Z]+$/.test(username)) {
-        const para = document.createElement('p')
-        para.innerHTML ="Name should not contain numbers";
-        para.style.color= 'red';
-        usernameError.appendChild(para)
-
-        
-        console.log(usernameError)
-        return false;
-    }
+    
     usernameError.innerHTML = "";
     
     return true;
@@ -69,16 +60,7 @@ function Validatename(){
     document.getElementById("name-error").innerHTML="";
     document.getElementById("name").style.border = "2px solid green";
 
-    if (!/^[a-zA-Z]+$/.test(name)) {
-        const para = document.createElement('p')
-        para.innerHTML ="Name should only contain alphabets";
-        para.style.color= 'red';
-        nameError.appendChild(para)
-
-        
-        console.log(nameError)
-        return false;
-    }
+    
     nameError.innerHTML = "";
     
     return true;

@@ -138,3 +138,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# AUTHENTICATION_BACKENDS = ['social_core.backends.google.GoogleOAuth2']
+
+# SOCIAL_AUTH_GOOGLE_0AUTH2_KEY = 
+# SOCIAL_AUTH_GOOGLE_0AUTH2_SECRET = 

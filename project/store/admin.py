@@ -12,7 +12,10 @@ class CategoryUser(admin.ModelAdmin):
 class ProductsUser(admin.ModelAdmin):
     list_display=("name","price","quantity","category")
 
+class CartUser(admin.ModelAdmin):
+    list_display = ("user","product","quantity")
 admin.site.register(Customers,CustomersUser)
 admin.site.register(Category,CategoryUser)
 admin.site.register(Products,ProductsUser)
+admin.site.register(Cart,CartUser)
 

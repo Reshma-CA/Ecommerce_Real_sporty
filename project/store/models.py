@@ -34,3 +34,8 @@ class Products(models.Model):
     image3=models.ImageField(upload_to='store/products/', blank=True)
     image4=models.ImageField(upload_to='store/products/', blank=True)
 
+class Cart(models.Model):
+    user =  models.ForeignKey(Customers,on_delete =models.CASCADE)
+    product = models.ForeignKey(Products, on_delete = models.CASCADE)
+    quantity = models.PositiveBigIntegerField()
+    total = models.DecimalField(max_digits=10,decimal_places=2)

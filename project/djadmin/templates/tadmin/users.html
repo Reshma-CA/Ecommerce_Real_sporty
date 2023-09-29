@@ -67,9 +67,10 @@ Users Section
                                     <td>{{ item.phonenumber }}</td>
                                     <td>
                                         {% if item.isblocked %}
-                                        <a href="{% url 'admin_unblockuser' item.id %}" class="btn btn-success btn-sm">Unblock</a>
+                                        <a href="{% url 'admin_unblockuser' item.id %}?action=unblock" class="btn btn-success" onclick="return confirm('Are you sure you want to unblock this user?')">Unblock</a>
                                         {% else %}
-                                        <a href="{% url 'admin_blockuser' item.id %}" class="btn btn-warning btn-sm">Block</a>
+                                        {% comment %} <a href="{% url 'admin_blockuser' item.id %}" class="btn btn-warning btn-sm">Block</a> {% endcomment %}
+                                        <a href="{% url 'admin_blockuser' item.id %}?action=block" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure you want to block this user?')">Block</a>
                                         {% endif %}
                                     </td>
                                 </tr>

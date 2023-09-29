@@ -11,6 +11,9 @@ urlpatterns = [
     path('logout/',views.logoutuser,name = 'logout'),
     path('otplogin/',views.otplogin,name = 'otp_ph_login'),
     path('otp_verify/',views.otp_verify,name = 'otp_veryfy'),
+    path('resend_otp/', views.resend_otp, name='resend_otp'),
+    # path('forgot_password/', views.forgot_password, name='forgot_password'),
+    path('forgot_password/', views.changepass, name='forgot_password'),
+
     # path("products/",views.category_products,name = "products"),
 ]
-
