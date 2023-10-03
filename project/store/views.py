@@ -46,69 +46,87 @@ def Register(request):
         phonenumber=request.POST.get("phonenumber")
         password=request.POST.get("password")
         repassword=request.POST.get("repassword")
+        
 
         already_presentuser = None
         try:
             already_presentuser = Customers.objects.get(username = username)
+            
         except:
             pass
 
         
 
-        if not username.isalpha() == False:
+        if not username.isalpha():
            error["username"]="Name can't have numbers"
 
         elif len(username)<4:
+           
             error["username"]="Username should contain minimum four characters"
 
-        elif not name.isalpha() == False:
+        elif not name.isalpha() :
+            
             error["name"]="Name can't have numbers"
             
         elif already_presentuser:
+            
             error["username"]="Username already taken.Please choose any other"
             
         elif len(username)>10:
+            
             error["username"]="Username can only have upto 10 characters"
             
         elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            
             error["email"]="Invalid Email"
 
         elif phonenumber.isalpha()==True:
+            
             error["phonenumber"]="Phonenumber can't have letters"
 
         elif not re.match(r"^\d{10}$",phonenumber):
+            
             error["phonenumber"]="Invalid Phone number"
 
         elif Customers.objects.filter(email=email):
+            
             error["email"]="Email already exists! Please Use a different email"
 
         elif len(password)<6:
+            
             error["password"]="Password must atleast contain 6 characters"
 
         elif len(password)>12:
+            
             error["password"]="Password can only have upto 12 characters"
             
         elif password!=repassword:
+            
             error["repassword"]="Passwords doesn't match to Confirm password!" 
 
         
 
         elif len(phonenumber)!=10:
+            
             error["phonenumber"]="Invalid Phonennumber"
 
         elif phonenumber[0]==0:
+            
             error["phonenumber"]="Invalid Phone number"
 
         elif int(phonenumber)<0:
+            
             error["phonenumber"]="Phone number can't be negative value" 
 
         elif Customers.objects.filter(phonenumber=phonenumber):
+            
             error["phonenumber"]="Phone number already exists! Please Use a differnet number"
         
         else:
             request.session["contactno"] = phonenumber
             res=Customers(username=username,email=email,password=password,repassword=repassword,phonenumber=phonenumber,name=name)
             res.save()
+            
             msg="Signup Successfull"
             return redirect('otp_ph_login')
         
@@ -224,15 +242,31 @@ def otp_verify(request):
 def resend_otp(request):
     msg1="OTP sent. "
     msg2="Please enter the OTP received in your phone below."
-    if request.method == 'POST':
-        phonenumber = request.session.get('U_phone')
-        
-        if phonenumber:
-            new_otp = generate_otp()
+    
+    Uphonenumber = request.session.get('U_phone')
+    phonenumber=None
+    if 'phonenumber' in request.session:
+            phonenumber = request.session['phonenumber']
+            
+    print(Uphonenumber,phonenumber)
+    if Uphonenumber or phonenumber:
+
+        new_otp = generate_otp()
+        if phonenumber is not None:
             send_otp(phonenumber, new_otp)
-            request.session['U_otp'] = new_otp
-            messages.success(request, "OTP resent successfully. Please check your phone.")
-            return redirect('verifyotp')
+        else:
+            send_otp(Uphonenumber,new_otp)
+
+        request.session['U_otp'] = new_otp
+        request.session['otp'] = new_otp
+        messages.success(request, "OTP resent successfully. Please check your phone.")
+
+        if 'phonenumber' in request.session:
+            print('phone number in session sendotp')
+            return redirect('forg_verify_otp')
+        
+        return redirect('otp_veryfy')
+    
             
     return render(request, "otp_veryfy.html", {"msg1": msg1, "msg2": msg2})               
 
@@ -258,19 +292,92 @@ def single_products_details(request,id):
     return render(request,'single-product-details.html',context)
 
 
-def changepass(request):
-    if request.method=="POST":
-        email=request.POST.get("email")
-        print(email)
-        user=Customers.objects.get(email=email)
-        print(user)
-        password=request.POST.get("password")
-        user.password=password
-        user.save()
-        print(user.password)
-        return redirect('login-page')
+def forg_pass(request):
+    if request.method == "POST":
+        
+        phonenumber=request.POST["phonenumber"]
+        user = Customers.objects.filter(phonenumber=phonenumber).count()
+        if user == 0:
+            error="Phonenumber not registered"
+            return render(request,"forgot_pass.html",{"error":error})
+        
+        else :
 
-    return render(request,"forgot_pass.html")
+            # Generate and send OTP (you should implement send_otp)
+            otp = generate_otp()
+
+            # Store the OTP in the session for verification later
+            request.session['otp'] = otp
+            request.session['phonenumber'] = phonenumber
+
+            send_otp(phonenumber, otp)
+            return redirect('forg_verify_otp')
+        
+    return render(request, "forgot_pass.html")
+
+
+
+# from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password
+# from django.contrib.auth.models import User
+# from django.contrib import messages
+# import random     
+
+def forg_verify_otp(request):
+   
+
+    if request.method == "POST":
+        user_otp = request.POST.get("otp")
+        print(user_otp,'otp')
+        stored_otp = request.session.get('otp')
+        print(stored_otp,'session otp')
+        phonenumber = request.session.get('phonenumber')
+        print(phonenumber,'phone')
+        
+        if user_otp == stored_otp:
+            # If OTP is correct, allow the user to reset their password
+            return render(request, "forgot_reset_pass.html", {"phonenumber": phonenumber})
+        else:
+            error = "Incorrect OTP. Please try again."
+            request.session['otp']= generate_otp()
+            send_otp(phonenumber,request.session['otp'])
+            p_session=request.session['phonenumber']=phonenumber
+            p_usession=request.session['U_phone']=phonenumber
+            print(p_session,p_usession)
+            
+            return render(request, "forgot_verify.html", {"error": error})
+
+    return render(request, "forgot_verify.html")
+
+def forg_reset_password(request):
+    if request.method == "POST":
+        phonenumber = request.POST.get("phonenumber")
+        print(phonenumber)
+        password = request.POST.get("password")
+        print(password)
+        confirm_password = request.POST.get("confirm_password")
+        print(confirm_password)
+
+        if password != confirm_password:
+            error = "Passwords do not match. Please try again."
+            return render(request, "forgot_reset_pass.html", {"error": error})
+
+        try:
+            user = Customers.objects.get(phonenumber=phonenumber)
+            print(user)
+        except Customers.DoesNotExist:
+            error = "User's phone number does not exist in the database."
+            return render(request, "forgot_reset_pass.html", {"error": error})
+
+        # Update the user's password (you should hash the password before saving it)
+        user.password = confirm_password
+        user.save()
+
+        messages.success(request, "Password reset successfully. You can now log in with your new password.")
+        return redirect("login-page")  # Redirect to your login page
+
+    return render(request, "forgot_reset_pass.html")
+
 
 
 

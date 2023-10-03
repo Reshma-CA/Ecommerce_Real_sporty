@@ -60,6 +60,18 @@ function Validatename(){
     document.getElementById("name-error").innerHTML="";
     document.getElementById("name").style.border = "2px solid green";
 
+    if (name.length === 0) {
+
+        const para = document.createElement('p')
+        para.innerHTML ="Name is required";
+        para.style.color= 'red';
+        nameError.appendChild(para)
+
+        
+        console.log(nameError)
+        return false;
+    }
+
     
     nameError.innerHTML = "";
     
@@ -93,7 +105,7 @@ function validateEmail(){
         console.log(emailError)
         return false
     }
-    emailError.innerHTML = ""
+    emailError.innerHTML = "";
     return true;
 
 
@@ -126,7 +138,7 @@ function validatePhone() {
         console.log(phonenumberError)
         return false;
     }
-    phonenumberError.innerHTML = ""
+    phonenumberError.innerHTML = "";
     return true;
 }
 
@@ -147,7 +159,7 @@ function validatepassword(){
        console.log(passwordeError)
        return false;
    }
-   passwordeError.innerHTML = ""
+   passwordeError.innerHTML = "";
    return true;
 
 }
@@ -172,62 +184,3 @@ function validateConfirmPassword() {
     repasswordError.innerHTML = "";
     return true;
 }
-
-// function submitForm(){
-//     if((!validateUsername()) || (!Validatename()) || (!validateEmail()) || (validatePhone())|| (validatepassword())|| (validateConfirmPassword()) ){
-//       submitError.innerHTML='please fill all fields'
-//       return false;
-//     }else{
-//       alert('form submit successfully')
-//     }
-//   }
-
-
-
-
-
-// ########################################################################
-    // Validation for username
-    // if (!/^[a-zA-Z]+$/.test(username)) {
-    //     errorMsg += "Name should only contain letters.\n";
-    // }
-    // if (username.length < 4) {
-    //     errorMsg += "Name should have at least 4 characters.\n";
-    // }
-    // if (username.length > 10) {
-    //     errorMsg += "Username can have at most 10 characters.\n";
-    // }
-
-    // Validation for email
-    // if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-    //     errorMsg += "Invalid Email.\n";
-    // }
-
-    // Validation for password
-    // if (password.length < 6) {
-    //     errorMsg += "Password must have at least 6 characters.\n";
-    // }
-    // if (password !== repassword) {
-    //     errorMsg += "Passwords do not match.\n";
-    // }
-
-    // Validation for phone number
-    // if (!/^\d{10}$/.test(phonenumber)) {
-    //     errorMsg += "Phone number should have ten digits.\n";
-    // }
-
-    // Validation for name (address)
-    // if (!/^[a-zA-Z]+$/.test(name)) {
-    //     errorMsg += "Address should only contain alphabets.\n";
-    // }
-
-    // if (errorMsg !== "") {
-    //     alert(errorMsg);
-    //     return false; // Prevent form submission
-    // }
-    // return true;
-     // Allow form submission if all checks pass
-
-
-// ###########################################################################################################
-
