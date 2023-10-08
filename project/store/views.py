@@ -31,9 +31,49 @@ def index(request):
     #  Category.objects.filter(price_gte=pricerange)
      
 
+def category_products(request,id):
+     
+     category_s = Category.objects.get(id=id)
+     product_s = Products.objects.filter(category=category_s)
+     context={"category_s":category_s,"product_s":product_s}
+     
+     return render(request,'products.html',context)
 
+def single_products_details(request,id):
+
+    product = Products.objects.filter(id = id).first()
+    context = {'product':product}
+    return render(request,'single-product-details.html',context)
+
+def checkout(request):
+    return render(request,'checkout.html')
     
-    
+def cart(request):
+    if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+        userobj=Customers.objects.get(username=request.session["username"])
+        cartobjs=Cart.objects.filter(user=userobj)
+        totalsum=0
+        for item in cartobjs:
+            totalsum+=item.total
+
+        no_of_cart_items=cartobjs.count()
+        wishlistobjs=Wishlist.objects.filter(user=userobj)
+        no_of_wishlist_items=wishlistobjs.count()
+        return render(request,"cart.html",{"cartobjs":cartobjs,"totalsum":totalsum,"no_of_cart_items":no_of_cart_items,"no_of_wishlist_items":no_of_wishlist_items})
+    else:
+        return redirect('login-page') 
+
+def userprofile(request):
+    return render(request,"userprofile.html") 
+
+def orderplaced(request):
+    return render(request,'orderplaced.html') 
+
+def wallet(request):
+    return render(request,'wallet.html')
+
+def deliveredproduct(request):
+    return render(request,"deliveredproduct.html")
 
 def Register(request):
       if 'username' in request.session:
@@ -136,23 +176,53 @@ def Register(request):
       
 
 def Login(request):
-    if 'cusername' in request.session:
-        myuser=request.session["cusername"]
-        contents=Customers.objects.filter(username=myuser)
-        return render(request,"home.html",{"contents":contents})
+    try:
+        if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+            return redirect('home')
+    except:
+        pass
     if request.method=="POST":
-        username=request.POST.get("username")
-        password=request.POST.get("password")
-        count=Customers.objects.filter(username=username,password=password).count()
-        if count==1:
-            request.session["cusername"]=username
-            contents=Customers.objects.filter(username = username)# require only our details
-            return render(request,"home.html",{"contents":contents})
-        else:
-            return render(request,"login.html",{"cerror":"Sorry Invalid Credentials!"})
-        
-    return render(request,"login.html")
+            username=request.POST.get("username")
+            password=request.POST.get("password")
+            if len(username)<4:
+                error="Username should contain minimum four characters"
 
+            else:
+                try:
+                    customer = Customers.objects.get(username=username, password=password)
+                    if not customer.isblocked:
+                        request.session["username"] = username
+                        return redirect('home')
+                    else:
+                        context = "Account is blocked"
+                except Customers.DoesNotExist:
+                    context = "Invalid Credentials"
+
+                return render(request, "login.html", {"context": context})
+
+            if error:
+                return render(request,"login.html",{"error":error})
+                
+    if "cartdict" in request.session:
+        cartdict=request.session["cartdict"]
+        subtotal=0
+        for k,v in cartdict.items():
+            subtotal+=v["total"]
+        cartcount=len(cartdict)
+    else:
+        cartdict={}
+        subtotal=0
+        cartcount=0
+    if "wishlistdict" in request.session:
+        wishlistdict=request.session["wishlistdict"]
+        wishcount=len(wishlistdict) 
+    else:
+        wishcount=0  
+    context={"cartdict":cartdict,"totalsum":subtotal,"cartcount":cartcount,"wishcount":wishcount} 
+    return render(request,"login.html",context)
+
+# ############################################################################################################################
+    
 def home(request):
      return render(request,'home.html',{})
     
@@ -187,16 +257,7 @@ def otplogin(request):
            
         
 def send_otp(phonenumber, otp):
-    # url = ' https://www.fast2sms.com/dev/bulkV2'
-    # payload = f'sender_id=TXTIND&message={otp}&route=v3&language=english&numbers={phonenumber}'
-    # headers = {
-    #     'authorization': "1SYNLFJ7EK6H5YFAa4o6xbIf2A1Zjgr07Wci1XoHedRgK1SPny4i09DlUqjC",
-    #     'Content-Type': "application/x-www-form-urlencoded"
-    # }
-    # response = requests.request("POST", url, data=payload, headers=headers)
-    # print(response.text)
-        
-
+   
         url = "https://www.fast2sms.com/dev/bulkV2"
 
         querystring = {"authorization":"1SYNLFJ7EK6H5YFAa4o6xbIf2A1Zjgr07Wci1XoHedRgK1SPny4i09DlUqjC","variables_values":otp,"route":"otp","numbers":phonenumber}
@@ -270,27 +331,6 @@ def resend_otp(request):
             
     return render(request, "otp_veryfy.html", {"msg1": msg1, "msg2": msg2})               
 
-    
-
-# def forgot_password(request):
-    
-#     return render(request,"forgot_pass.html")
-
-
-def category_products(request,id):
-     
-     category_s = Category.objects.get(id=id)
-     product_s = Products.objects.filter(category=category_s)
-     context={"category_s":category_s,"product_s":product_s}
-     
-     return render(request,'products.html',context)
-
-def single_products_details(request,id):
-
-    product = Products.objects.filter(id = id).first()
-    context = {'product':product}
-    return render(request,'single-product-details.html',context)
-
 
 def forg_pass(request):
     if request.method == "POST":
@@ -314,14 +354,7 @@ def forg_pass(request):
             return redirect('forg_verify_otp')
         
     return render(request, "forgot_pass.html")
-
-
-
-# from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import make_password
-# from django.contrib.auth.models import User
-# from django.contrib import messages
-# import random     
+    
 
 def forg_verify_otp(request):
    
@@ -380,6 +413,7 @@ def forg_reset_password(request):
 
 
 
+    
 
 
 

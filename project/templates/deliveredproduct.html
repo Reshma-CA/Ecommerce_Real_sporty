@@ -1,0 +1,239 @@
+{% extends 'layouts/main.html'%}
+
+{% load static %}
+
+{% block content %}
+
+
+<!-- ##### Header Area Start ##### -->
+<header class="header_area">
+    <div class="classy-nav-container breakpoint-off d-flex align-items-center justify-content-between">
+        <!-- Classy Menu -->
+        <nav class="classy-navbar" id="essenceNav">
+            <!-- Logo -->
+            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <!-- Navbar Toggler -->
+            <div class="classy-navbar-toggler">
+                <span class="navbarToggler"><span></span><span></span><span></span></span>
+            </div>
+            <!-- Menu -->
+            <div class="classy-menu">
+                <!-- close btn -->
+                <div class="classycloseIcon">
+                    <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                </div>
+                <!-- Nav Start -->
+                <div class="classynav">
+                    <ul>
+                      <li><a href="#">Home</a>
+                        
+                    </li>
+                      <!-- #################################################### -->
+                        <li><a href="#">Shop</a>
+                            <div class="megamenu">
+                                <ul class="single-mega cn-col-4">
+                                    <li class="title">Collections </li>
+                                    <li><a href="shop.html">Badminton Racket &amp; Cock </a></li>
+                                    <li><a href="shop.html">Cricket Bat &amp; Ball</a></li>
+                                    <li><a href="shop.html">Football</a></li>
+                                    
+                                </ul>
+                              
+                                <div class="single-mega cn-col-4">
+                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
+                                </div>
+                            </div>
+                        </li>
+                        <!-- ############################################### -->
+                        <li><a href="#">Pages</a>
+                            <ul class="dropdown">
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="shop.html">Shop</a></li>
+                                <li><a href="single-product-details.html">Product Details</a></li>
+                                <li><a href="checkout.html">Checkout</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="single-blog.html">Single Blog</a></li>
+                                <li><a href="regular-page.html">Regular Page</a></li>
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li><a href="contact.html">Contact</a></li>
+                        
+                    </ul>
+                </div>
+                <!-- Nav End -->
+            </div>
+        </nav>
+
+        <!-- Header Meta Data -->
+        <div class="header-meta d-flex clearfix justify-content-end">
+            <!-- Search Area -->
+            <div class="search-area">
+                <form action="#" method="post">
+                    <input type="search" name="search" id="headerSearch" placeholder="Type for search">
+                    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </div>
+            <!-- Favourite Area -->
+            <div class="favourite-area">
+                <a href="#"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
+            </div>
+            <!-- User Login Info -->
+            <div class="user-login-info">
+                <a href="#"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
+            </div>
+            <!-- Cart Area -->
+            <div class="cart-area">
+                <a href="#" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+            </div>
+
+            <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div>
+        </div>
+
+    </div>
+</header>
+
+
+<br><br><br><br><br>
+
+<div class="row">
+
+  <h3 class="ltext-103 cl5 mt-5 ml-5">Delivered Products</h3>
+
+
+
+</div>
+
+<div class="container-fluid">
+
+  <div class="container-fluid">
+    <div class="row mt-5">
+      {% if orderobjs %}
+        <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status Of Order</th>
+                <th>Image</th>
+                <th>Cancel</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+                
+              {% for item in orderobjs %}
+              {% if item.orderstatus == "Delivered" or item.orderstatus == "ReturnRequested" or item.orderstatus == "Returned"  %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.finalprice }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.orderdate }}</td>
+                <td>{{ item.orderstatus }}</td>
+                <td><img class="img-fluid img-thumbnail" src="{{ item.product.image1.url }}" alt="" width="50" height="50"></td>
+        
+                {% if item.orderstatus == "Delivered" %}
+                <td id="order{{item.id}}"><button class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Return</button> </td>
+                {% elif item.orderstatus == "ReturnRequested"  %}
+                <td><span class="text-warning"> Return Initiated</span></td>
+                {% elif item.orderstatus == "Returned" %}
+                <td><span class="text-success"> Returned</span></td>
+
+                {% endif %}
+                {% comment %} {% elif item.orderstatus == "ReturnRequested" %}
+        
+                <td><span class="text-danger">Order <div>Return Initiated</div> </span></td> {% endcomment %}
+        
+                
+                {% endif %}
+        
+                {% comment %} <td>
+                  <a href="{% url 'admin_editproducts' item.id %}">
+                    <button class="btn edit-btn btn-warning">Edit</button>
+                  </a>
+                </td>
+                <td>
+                  <a href="{% url 'admin_deleteproducts' item.id %}">
+                    <button class="btn delete-btn btn-danger">Delete</button>
+                  </a>
+                </td> {% endcomment %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h3 class="text-danger">No orders yet!</h3>
+          {% endif %}
+    
+    </div>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<br><br><br><br><br><br><br><br><br><br>
+
+
+<div style="margin-top:100px;" class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+ 
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelModalLabel">Confirm Order Cancellation</h5>
+        <button type="button" class="close closeit" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to return this product?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeit" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger closeit" data-dismiss="modal" id="returnbutton">Confirm Return</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div style="margin-top:100px;" class="modal fade" id="walletmodal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+ 
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelModalLabel">Order Cancelled</h5>
+        
+          {% comment %} <span aria-hidden="true">&times;</span> {% endcomment %}
+        </button>
+      </div>
+      <div class="modal-body p-5">
+        <p > <h5 style="color:green;"> Amount is added to your wallet &#x2713; </h5></p>
+      </div>
+      {% comment %} <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeit" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger closeit" data-dismiss="modal" id="confirmcancel">Cancel Order</button>
+      </div> {% endcomment %}
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}

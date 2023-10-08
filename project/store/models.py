@@ -39,3 +39,8 @@ class Cart(models.Model):
     product = models.ForeignKey(Products, on_delete = models.CASCADE)
     quantity = models.PositiveBigIntegerField()
     total = models.DecimalField(max_digits=10,decimal_places=2)
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(Customers, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)

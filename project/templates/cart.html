@@ -1,0 +1,266 @@
+{% extends 'layouts/main.html'%}
+
+{% load static %}
+
+{% block content %}
+
+   <!-- ##### Header Area Start ##### -->
+   <header class="header_area">
+    <div class="classy-nav-container breakpoint-off d-flex align-items-center justify-content-between">
+        <!-- Classy Menu -->
+        <nav class="classy-navbar" id="essenceNav">
+            <!-- Logo -->
+            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <!-- Navbar Toggler -->
+            <div class="classy-navbar-toggler">
+                <span class="navbarToggler"><span></span><span></span><span></span></span>
+            </div>
+            <!-- Menu -->
+            <div class="classy-menu">
+                <!-- close btn -->
+                <div class="classycloseIcon">
+                    <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                </div>
+                <!-- Nav Start -->
+                <div class="classynav">
+                    <ul>
+                      <li><a href="#">Home</a>
+                        
+                    </li>
+                      <!-- #################################################### -->
+                        <li><a href="#">Shop</a>
+                            <div class="megamenu">
+                                <ul class="single-mega cn-col-4">
+                                    <li class="title">Collections </li>
+                                    <li><a href="shop.html">Badminton Racket &amp; Cock </a></li>
+                                    <li><a href="shop.html">Cricket Bat &amp; Ball</a></li>
+                                    <li><a href="shop.html">Football</a></li>
+                                    
+                                </ul>
+                              
+                                <div class="single-mega cn-col-4">
+                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
+                                </div>
+                            </div>
+                        </li>
+                        <!-- ############################################### -->
+                        <li><a href="#">Pages</a>
+                            <ul class="dropdown">
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="shop.html">Shop</a></li>
+                                <li><a href="single-product-details.html">Product Details</a></li>
+                                <li><a href="checkout.html">Checkout</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="single-blog.html">Single Blog</a></li>
+                                <li><a href="regular-page.html">Regular Page</a></li>
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li><a href="contact.html">Contact</a></li>
+                        
+                    </ul>
+                </div>
+                <!-- Nav End -->
+            </div>
+        </nav>
+
+        <!-- Header Meta Data -->
+        <div class="header-meta d-flex clearfix justify-content-end">
+            <!-- Search Area -->
+            <div class="search-area">
+                <form action="#" method="post">
+                    <input type="search" name="search" id="headerSearch" placeholder="Type for search">
+                    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </div>
+            <!-- Favourite Area -->
+            <div class="favourite-area">
+                <a href="#"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
+            </div>
+            <!-- User Login Info -->
+            <div class="user-login-info">
+                <a href="#"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
+            </div>
+            <!-- Cart Area -->
+            <div class="cart-area">
+                <a href="#" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+            </div>
+
+            <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div>
+        </div>
+
+    </div>
+</header>
+
+{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
+
+
+    <!-- #################################################################### -->
+
+	<div class="row mt-5"></div>
+	<div class="row mt-5"></div>
+	<div class="row mt-5"></div>
+	<div class="row mt-5"></div>
+	
+	
+	
+	
+	
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Shoping Cart -->
+		
+			<div class="container ">
+				<div class="row">
+					<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+						<div class="m-l-25 m-r--38 m-lr-0-xl">
+							<div class="wrap-table-shopping-cart ">
+	
+	
+								<table  class="table ">
+									<thead>
+									  <tr>
+										<th>Product</th>
+										<th>Name</th>
+										<th>Price</th>
+										<th>Quantity</th>
+										<th>Total</th>
+									  </tr>
+									</thead>
+									<tbody>
+									  {% for item in cartobjs %}
+									  <tr id="cartitem{{item.id}}">
+										<td>
+										  <img style="  max-width: 150px;
+										  max-height: 150px;" class="img-fluid img-responsive" src="{{ item.product.image1.url }}" alt="Product Image">
+										</td>
+										<td class="pt-3">{{ item.product.name }}</td>
+										<td class="pt-3"><div id="productamount">{{ item.product.price }}</div></td>
+	
+					
+										<td>
+										  <input class="choosequantity form-control" type="number" min="1" value="{{ item.quantity }}" name="quantity" data-item-id="{{ item.id }}">
+										</td>
+										<td class="pt-3"><div id="amount{{item.id}}">{{ item.total }}</div></td>
+	
+										<td><button class="remove_cart_item  btn btn-danger" data-cart-item={{item.id}}>Remove Item</button> </td>
+	
+	
+	
+									  </tr>
+									  {% endfor %}
+									</tbody>
+								  </table>
+							</div>
+	
+							
+							{% if cartobjs %}
+	
+							{% comment %} <div class="mt-5">
+								
+								<button  type="button" class="btn delete-btn btn-danger" >Remove All Items</button>
+							
+							
+							</div> {% endcomment %}
+	
+	
+	
+							
+							{% endif %}
+	
+							{% if not cartobjs %}
+							<div>
+	
+								<h5 class=" text-danger  ml-5 mt-5">No items in Cart!</h5>
+	
+	
+							</div>
+							
+							
+							
+							{% endif %}
+							
+	
+	
+	
+	
+	
+						</div>
+					</div>
+	
+					<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+						<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+							<h4 class="mtext-109 cl2 p-b-30">
+								Cart Totals
+							</h4>
+	
+							<div class="flex-w flex-t bor12 p-b-13">
+								<div class="size-208">
+									<span class="stext-110 cl2">
+										Subtotal:
+									</span>
+								</div>
+	
+								<div class="size-209">
+									<span class="subtotal mtext-110 cl2">
+										{{totalsum}}
+									</span>
+								</div>
+							</div>
+	
+							
+	
+							<div class="flex-w flex-t p-t-27 p-b-33">
+								<div class="size-208">
+									<span class="mtext-101 cl2">
+										Total:
+									</span>
+								</div>
+	
+								<div class="size-209 p-t-1">
+									<span class="subtotal mtext-110 cl2">
+										RS.{{totalsum}}
+									</span>
+								</div>
+							</div>
+	
+	
+	
+							{% if cartobjs %}
+							
+							
+							
+							
+							<button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+								<a class="text-info" href={% url 'checkout' %}>Proceed to Checkout</a>
+								
+							</button> 
+							{% else %}
+							<div>
+								<span class="text-success"> Explore Our Products!</span>
+								
+								<button  class=" flex-c-m stext-101 cl0 btn bg1 bor1 hov-btn1 p-lr-15 trans-04  mt-2"><a class="text-light" href={% url 'loggedinproduct' %}>Back To Shop</a></button>
+								 
+							
+	
+							</div>
+							
+	
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+	
+	
+	
+	
+	
+{% endblock content%}

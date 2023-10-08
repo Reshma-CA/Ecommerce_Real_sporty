@@ -4,7 +4,8 @@
 
 {% block content %}
 
-<header class="header_area">
+   <!-- ##### Header Area Start ##### -->
+   <header class="header_area">
     <div class="classy-nav-container breakpoint-off d-flex align-items-center justify-content-between">
         <!-- Classy Menu -->
         <nav class="classy-navbar" id="essenceNav">
@@ -23,22 +24,26 @@
                 <!-- Nav Start -->
                 <div class="classynav">
                     <ul>
+                      <li><a href="#">Home</a>
+                        
+                    </li>
+                      <!-- #################################################### -->
                         <li><a href="#">Shop</a>
                             <div class="megamenu">
-                                {% for item in allcategories %}
                                 <ul class="single-mega cn-col-4">
                                     <li class="title">Collections </li>
-                                    <li><a href="{% url 'category_products' item.id  %}">{{ item.name }} </a></li>
-                                    {% comment %} <li><a href="{% url 'category_products' item.id  %}">Tennis Racket</a></li>
-                                    <li><a href="{% url 'category_products' item.id  %}">Football</a></li>  {% endcomment %}
+                                    <li><a href="shop.html">Badminton Racket &amp; Cock </a></li>
+                                    <li><a href="shop.html">Cricket Bat &amp; Ball</a></li>
+                                    <li><a href="shop.html">Football</a></li>
                                     
-                                </ul> 
-                                {% endfor %}
+                                </ul>
+                              
                                 <div class="single-mega cn-col-4">
                                     <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
                                 </div>
                             </div>
                         </li>
+                        <!-- ############################################### -->
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
                                 <li><a href="index.html">Home</a></li>
@@ -53,8 +58,7 @@
                         </li>
                         
                         <li><a href="contact.html">Contact</a></li>
-                        {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
-                        <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
+                        
                     </ul>
                 </div>
                 <!-- Nav End -->
@@ -75,68 +79,77 @@
                 <a href="#"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
             </div>
             <!-- User Login Info -->
-            <!-- <div class="user-login-info">
+            <div class="user-login-info">
                 <a href="#"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
-            </div> -->
+            </div>
             <!-- Cart Area -->
             <div class="cart-area">
                 <a href="#" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
             </div>
+
+            <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div>
         </div>
 
     </div>
 </header>
 
-{% comment %} End header  {% endcomment %}
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="container-fluid card">
+    <div class="row">
+      <div class="col-md-7 text-center">
+        <span class="icon-check_circle display-3 text-success"></span>
+        <h2 class=" text-black display-3 pt-4 ">Thank you!</h2><br>
+        <p class="lead  text-success">You order was successfully completed!</p> 
+        <img style="width:150px;height:150px;" class="img-fluid" src={% static 'store/images/greentick.jpg' %} alt="">
+        <h4 class=" text-black  "> <strong>Total Amount :</strong>  <i>Rs. {{ordertotal}}</i> /-</h4>
+        <p><a href={% url 'loggedinproduct' %} class="btn  stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04  mt-5 pt-2">Back to shop</a></p>
+      </div>
+
+      <div class="col-md-5 mb-4">
+        <div class="card mt-4">
+          <div class="card-header">
+              <h2> <strong> Order Details</strong></h2>
+          </div>
+          <div class="card-body">
+            
+            {% for item,data in currentorder.items  %}
+            
+            
+              <p class="card-text"> <strong> Product:</strong> {{item}}</p>
+              <p class="card-text"><strong> Quantity:</strong>      {{data.quantity}}</p>
+              <p class="card-text"><strong> Order Date:</strong>  {{data.orderdate}}  </p>
+              <p class="card-text"><strong> Shipping Address:</strong>   {{data.address}} </p>
+              <p class="card-text"><strong>  Product Price:</strong>  {{data.finalprice}}</p>
+              <br><br><hr>
+              {% endfor %}
+          </div>
+        </div>  
+      </div>
 
 
-<div class="container">
-    <br><br><br>
-    <div class="row mt-5 text-success justify-content-center">
-        
-            {{msg1}}&#x2713; 
-            <div class="ml-2">
-                {{msg2}}
-            </div>
-        
-    </div>
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header flex-c-m p-lr-10 trans-04 ">
-                    <h4 style ="color:blue; font-family: sans-serif;">Verify OTP</h4>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="email">Enter OTP</label>
-                            <input type="number" class="form-control" id="email" placeholder="Enter the OTP" name="otp">
-                        </div>
-                        <br>
-                        <div class="justify-content-center ">
-                            <button type="submit" class="btn btn-primary">Verify</button>
 
-                        </div>
-                        <div class="text-danger mt-2">
-                             {{error}}
-                        </div>
-                        
 
-                    </form>
-                    
-                    <div class="text-center mt-3">
-                        <a href="{% url 'resend_otp' %}" class="btn" style="background-color: #FFD700; color: black;">Re-send OTP</a>
 
-                    </div>
 
-                </div>
-            </div>
-        </div>
     </div>
 </div>
-<br><br><br><br>
+   
 
 
 
-{% endblock content%}
+
+
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% endblock content %}

@@ -50,7 +50,7 @@ Product Section
     </div>
   
     <div class="row justify-content-end">
-      <a href="#">
+      <a href="{% url 'addproduct' %}">
         <button class="btn add-product-btn btn-primary mt-2">Add Product</button>
       </a>
     </div>
@@ -80,15 +80,30 @@ Product Section
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.category.name }}</td>
                 <td style="max-width: 1000px; white-space: normal">{{ item.description }}</td>
-                <td><img src="{{ item.image2.url }}"width="100px" alt=""></td>
+
+                {% comment %}  {% endcomment %}
+
                 <td>
-                  <a href="#">
-                    {% comment %} <a href="{% url 'admin_editproducts' item.id %}"> {% endcomment %}
+                  {% if item.image1 %}
+                      <img src="{{ item.image1.url }}" width="100px" alt="">
+                  {% else %}
+                      No Image Available
+                  {% endif %}
+              </td>
+              
+
+
+                {% comment %}  {% endcomment %}
+                {% comment %} <td><img src="{{ item.image2.url }}"width="100px" alt=""></td> {% endcomment %}
+                <td>
+                  
+                    <a href="{% url 'editproduct' item.id %}">
 
                     <button class="btn edit-btn btn-warning">Edit</button>
                   </a>
                 </td>
                 <td>
+                  <a href="{% url 'delete_product' item.id %}">
                   <button  type="button" class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Delete</button>
               
                 </td>
