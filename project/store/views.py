@@ -13,6 +13,13 @@ import re
 import random
 from twilio.rest import Client
 import requests
+from django.shortcuts import render, get_object_or_404
+from decimal import Decimal
+# from PIL import Image
+# from io import BytesIO
+# from django.core.files.base import ContentFile
+
+
 # from .utils import generate_otp, send_otp
 
 
@@ -20,7 +27,7 @@ import requests
 
 def index(request):
 
-    allcategories=Category.objects.all()
+    allcategories=Category.objects.filter(isblocked=False)
     allproducts=Products.objects.all()
     context={"allcategories":allcategories,"allproducts":allproducts}
     return render(request,'index.html',context)
@@ -39,32 +46,267 @@ def category_products(request,id):
      
      return render(request,'products.html',context)
 
-def single_products_details(request,id):
+# def single_products_details(request, id):
+#     product = get_object_or_404(ZoomProduct, id=id)
+#     return render(request, 'single-product-details.html', {'product': product})
 
+def single_products_details(request,id):
     product = Products.objects.filter(id = id).first()
     context = {'product':product}
     return render(request,'single-product-details.html',context)
 
-def checkout(request):
-    return render(request,'checkout.html')
-    
-def cart(request):
-    if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
-        userobj=Customers.objects.get(username=request.session["username"])
-        cartobjs=Cart.objects.filter(user=userobj)
-        totalsum=0
-        for item in cartobjs:
-            totalsum+=item.total
+# def add_to_cart(request):
+#     if request.method == 'POST':
+#         if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+#             userobj = Customers.objects.get(username=request.session["username"])
+#             product_id = request.POST.get('product_id')
 
-        no_of_cart_items=cartobjs.count()
-        wishlistobjs=Wishlist.objects.filter(user=userobj)
-        no_of_wishlist_items=wishlistobjs.count()
-        return render(request,"cart.html",{"cartobjs":cartobjs,"totalsum":totalsum,"no_of_cart_items":no_of_cart_items,"no_of_wishlist_items":no_of_wishlist_items})
+#             try:
+#                 product = Products.objects.get(id=product_id)
+#             except Products.DoesNotExist:
+#                 return redirect('home')  # Redirect to the home page or handle this case as needed
+
+#             # Check if the product is already in the user's cart
+#             existing_cart_item = Cart.objects.filter(user=userobj, product=product).first()
+
+#             if existing_cart_item:
+#                 existing_cart_item.quantity += 1  # Increment the quantity if it already exists
+#                 existing_cart_item.save()
+#             else:
+#                 # Create a new cart item for the product
+#                 cart_item = Cart(user=userobj, product=product, quantity=1, total=product.price)
+#                 cart_item.save()
+
+#             messages.success(request, 'Item added to cart')
+#             return redirect('home')  # Redirect to the home page or handle this as needed
+#         else:
+#             return redirect('login-page')
+#     else:
+#         return redirect('home')  # Redirect to the home page or handle this as needed
+
+def add_to_cart(request):
+    if request.method == 'POST':
+        if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+            userobj = Customers.objects.get(username=request.session["username"])
+            product_id = request.POST.get('product_id')
+
+            try:
+                product = Products.objects.get(id=product_id)
+            except Products.DoesNotExist:
+                return redirect('home')  # Redirect to the home page or handle this case as needed
+
+            # Check if the product is already in the user's cart
+            existing_cart_item = Cart.objects.filter(user=userobj, product=product).first()
+
+            if existing_cart_item:
+                existing_cart_item.quantity += 1  # Increment the quantity if it already exists
+                existing_cart_item.total = existing_cart_item.quantity * product.price  # Calculate the new total
+                existing_cart_item.save()
+               
+            else:
+                # Create a new cart item for the product
+                cart_item = Cart(user=userobj, product=product, quantity=1, total=product.price)
+                cart_item.save()
+
+            messages.success(request, 'Item added to cart')
+            return redirect('home')  # Redirect to the home page or handle this as needed
+        else:
+            return redirect('login-page')
     else:
-        return redirect('login-page') 
+        return redirect('home')  # Redirect to the home page or handle this as needed
 
+    
+def view_cart(request):
+    if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+        userobj = Customers.objects.get(username=request.session["username"])
+        cartobjs = Cart.objects.filter(user=userobj)
+
+        # Calculate the total for each cart item
+        for item in cartobjs:
+            item.total = item.quantity * item.product.price
+
+        totalsum = sum(item.total for item in cartobjs)
+        no_of_cart_items = cartobjs.count()
+        wishlistobjs = Wishlist.objects.filter(user=userobj)
+        no_of_wishlist_items = wishlistobjs.count()
+
+        return render(request, "cart.html", {
+            "cartobjs": cartobjs,
+            "totalsum": totalsum,
+            "no_of_cart_items": no_of_cart_items,
+            "no_of_wishlist_items": no_of_wishlist_items
+        })
+    else:
+        return redirect('login-page')
+
+
+def delete_cart_item(request):
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id')
+
+        # Assuming you have a Cart model
+        cart_item = get_object_or_404(Cart, id=cart_id)
+
+        # Delete the cart item
+        cart_item.delete()
+
+        # You can also calculate the new total or do any other necessary actions here
+
+        # Redirect to the cart view or any other page you prefer
+        return redirect('cart')  # Redirect to the cart page or any other page
+
+    # Handle other HTTP methods as needed
+    return redirect('cart')  # Redirect to the cart page or any other page
+
+def add_to_wishlist(request):
+    if request.method == 'POST':
+        if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+            userobj = Customers.objects.get(username=request.session["username"])
+            product_id = request.POST.get('product_id')
+            
+        
+            try:
+                product = Products.objects.get(id=product_id)
+            except Products.DoesNotExist:
+                return redirect('home')  # Redirect to the home page or handle this case as needed
+
+            # Check if the product is already in the user's wishlist
+            existing_wishlist_item = Wishlist.objects.filter(user=userobj, product=product).first()
+
+            if existing_wishlist_item:
+                messages.info(request, 'Item already in wishlist')
+            else:
+                # Create a new wishlist item for the product
+                wishlist_item = Wishlist(user=userobj, product=product)
+                wishlist_item.save()
+                messages.success(request, 'Item added to wishlist')
+
+            return redirect('home')  # Redirect to the home page or handle this as needed
+        else:
+            return redirect('login-page')
+    else:
+        return redirect('home')  # Redirect to the home page or handle this as needed
+    
+def view_wishlist(request):
+    if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+        userobj = Customers.objects.get(username=request.session["username"])
+        wishlistobjs = Wishlist.objects.filter(user=userobj)
+
+        return render(request, "wishlist.html", {
+            "wishlistobjs": wishlistobjs,
+        })
+    else:
+        return redirect('login-page')
+
+def delete_wishlist_item(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+
+        # Assuming you have a Cart model
+        wishlist_item = get_object_or_404(Wishlist, id=product_id)
+
+        # Delete the cart item
+        wishlist_item.delete()
+
+        # You can also calculate the new total or do any other necessary actions here
+
+        # Redirect to the cart view or any other page you prefer
+        return redirect('wishlist')  # Redirect to the cart page or any other page
+
+    # Handle other HTTP methods as needed
+    return redirect('wishlist')  # Redirect to the cart page or any other page
+
+
+    
 def userprofile(request):
-    return render(request,"userprofile.html") 
+    username = request.session["username"]
+    customerobj = Customers.objects.get(username=username)
+    orderobjs = Orders.objects.filter(user=customerobj)
+    addressobjs = Address.objects.filter(customer=customerobj)
+    wishlistobjs = Wishlist.objects.filter(user=customerobj)
+    cartobjs = Cart.objects.filter(user=customerobj)
+
+    no_of_cart_items = cartobjs.count()
+    no_of_wishlist_items = wishlistobjs.count()
+
+    totalsum = 0
+    for item in cartobjs:
+        totalsum += item.total
+
+    ordernumberobjs = Ordernumber.objects.filter(user=customerobj)
+
+    # Get a list of all customer objects
+    customerobj_list = Customers.objects.filter(username=username)
+
+    context = {
+        "ordernumberobjs": ordernumberobjs,
+        "orderobjs": orderobjs,
+        "username": username,
+        "addressobjs": addressobjs,
+        "username": username,
+        "addressobjs": addressobjs,
+        "customerobj": customerobj,
+        "cartobjs": cartobjs,
+        "totalsum": totalsum,
+        "no_of_cart_items": no_of_cart_items,
+        "no_of_wishlist_items": no_of_wishlist_items,
+        "customerobj_list": customerobj_list,  # Pass the list of customer objects
+    }
+    return render(request, "userprofile.html", context)
+
+
+def edituserdetails(request,user_id):
+     # Check if the user has permission to edit the details (you can customize this part)
+    # if request.user.id != user_id:
+    #     return HttpResponse("You don't have permission to edit this user's details")
+
+    if request.method == "POST":
+        name = request.POST["name"]
+        email = request.POST["email"]
+        phonenumber = request.POST["phonenumber"]
+
+        customerobj = Customers.objects.get(id=user_id)
+        
+        customerobj.name = name
+        customerobj.email = email
+        customerobj.phonenumber = phonenumber
+        customerobj.save()
+        return redirect('userprofile')
+
+    customerobj = Customers.objects.get(id=user_id)
+    return render(request, 'edituserdetails.html', {'customerobj': customerobj})
+
+
+def Add_address(request):
+    if request.method == "POST":
+        house = request.POST.get("house")
+        locality = request.POST.get("locality")
+        district = request.POST.get("district")
+        state = request.POST.get("state")
+        country = request.POST.get("country")
+        pincode = request.POST.get("pincode")
+
+        # You'll need to get the user/customer related to this address.
+        # Assuming you have a way to identify the customer, you can replace the following line.
+        # customer = Customers.objects.get(username=request.session["username"])
+
+        # Create a new Address object and save it.
+        address = Address(
+            house=house,
+            locality=locality,
+            district=district,
+            state=state,
+            country=country,
+            pincode=pincode,
+            # customer=customer  # Replace 'customer' with the actual customer object
+        )
+        address.save()
+
+        # Redirect to the user profile or an appropriate page
+        return redirect('userprofile')  # Change 'userprofile' to your actual user profile URL name
+
+    return render(request, 'add_address.html')
+   
 
 def orderplaced(request):
     return render(request,'orderplaced.html') 
@@ -74,6 +316,9 @@ def wallet(request):
 
 def deliveredproduct(request):
     return render(request,"deliveredproduct.html")
+
+def checkout(request):
+    return render(request,'checkout.html')
 
 def Register(request):
       if 'username' in request.session:
@@ -224,7 +469,11 @@ def Login(request):
 # ############################################################################################################################
     
 def home(request):
-     return render(request,'home.html',{})
+    allcategories=Category.objects.all()
+    allproducts=Products.objects.all()
+    context={"allcategories":allcategories,"allproducts":allproducts}
+    return render(request,'home.html',context)
+     
     
 def logoutuser(request):
     logout(request)

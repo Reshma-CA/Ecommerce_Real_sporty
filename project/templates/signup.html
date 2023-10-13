@@ -31,6 +31,8 @@
 							<label for="email">Username</label>
 							<input type="text" value="{{username}}" class="form-control" id="username" onfocus="border:1px solid green;" placeholder="Enter Username" name="username" onkeyup="validateUsername()">
 							<div id="username-error"></div>
+
+
 							{% if error and "username" in error %}
 							<span style="color: red">{{error.username}}</span>
 							{% endif %}
@@ -69,6 +71,7 @@
 							<label for="password">Password</label>
 							<input type="password" value="{{password}}" class="form-control" id="password" onfocus="border:1px solid green;" placeholder="Enter Password" name="password" onkeyup="validatepassword()">
 						    <div id="password-error"></div>
+							
 							{% if error and "password" in error %}
 							<span style="color: red">{{error.password}}</span>
 							{% endif %}
