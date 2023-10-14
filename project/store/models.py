@@ -67,6 +67,7 @@ class Address(models.Model):
     house = models.CharField(max_length=200)
     pincode = models.PositiveIntegerField()
 
+
 class Coupon(models.Model):
     code = models.CharField(max_length = 200, unique = True)
     discount_percentage = models.PositiveIntegerField()
@@ -76,28 +77,26 @@ class Coupon(models.Model):
 
 
 
-
-class Ordernumber(models.Model):
-    Slno = models.PositiveIntegerField()
-    user = models.ForeignKey(Customers,on_delete = models.CASCADE)
-    total_amount = models.DecimalField(max_digits = 10,decimal_places = 2)
-    coupon = models.ForeignKey(Coupon,on_delete = models.CASCADE,blank = True,default = None,null = True)
-    ordertime = models.DateField(auto_now_add = True)
-
+class Order(models.Model):
+    user=models.ForeignKey(Customers,on_delete=models.CASCADE)
+    totalamount=models.DecimalField(max_digits=10, decimal_places=2)
+    coupon=models.ForeignKey(Coupon,on_delete=models.CASCADE,blank=True,default=None,null=True)
+    ordertime=models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.Slno)
+        return str(self.ordertime)
+
     
-class Orders(models.Model):
-    user = models.ForeignKey(Customers,on_delete=models.CASCADE)
-    product = models.ForeignKey(Products,on_delete = models.CASCADE)
-    address = models.ForeignKey(Address,on_delete = models.CASCADE)
-    orderdate = models.DateField(auto_now_add = True)
-    orderstatus = models.CharField(max_length = 200,default = "Pending")
-    ordertype = models.CharField(max_length = 200)
-    quantity = models.PositiveIntegerField()
-    finalprice = models.DecimalField(max_digits = 10,decimal_places = 2)
-    ordernumber = models.ForeignKey(Ordernumber,on_delete = models.CASCADE)
+class Orders_details(models.Model):
+    user=models.ForeignKey(Customers,on_delete=models.CASCADE)
+    product=models.ForeignKey(Products,on_delete=models.CASCADE)
+    address=models.ForeignKey(Address,on_delete=models.CASCADE)
+    orderdate=models.DateField(auto_now_add=True)
+    orderstatus=models.CharField(max_length=200,default="pending")
+    ordertype=models.CharField(max_length=200)
+    quantity=models.PositiveIntegerField()
+    finalprice=models.DecimalField(max_digits=10, decimal_places=2)
+    ordernumber=models.ForeignKey(Order,on_delete=models.CASCADE)
 
 
 

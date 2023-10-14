@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block custom_css %}
+
 <style>
     /* Add your custom CSS styles for this page here */
     .add-address-container {
@@ -44,7 +45,9 @@
         background-color: #ff4500;
     }
 </style>
+
 {% endblock custom_css %}
+
 
 {% block content %}
 
@@ -139,49 +142,57 @@
     <!-- #################################################################### -->
 
     <!-- ##### Navbar end End ##### -->
+    <br>
 
-<br>
+    <div class="container mt-5">
+        <div class="add-address-container">
+            <h1 class="text-center mb-4">Edit Address</h1>
+    
+            <form method="POST">            
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="house">House/Flat Number:</label>
+                    <input type="text" id="house" name="house" value="{{ house }}" class="form-control" required>
+                    
+                </div>
 
-<div class="container mt-5">
-    <div class="add-address-container">
-        <h1 class="text-center mb-4">Add New Address</h1>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="house">House/Flat Number:</label>
-                <input type="text" name="house" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="locality">Locality:</label>
-                <input type="text" name="locality" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="district">District:</label>
-                <input type="text" name="district" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="state">State:</label>
-                <input type="text" name="state" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="country">Country:</label>
-                <input type="text" name="country" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="pincode">Pincode:</label>
-                <input type="text" name="pincode" class="form-control" required>
-            </div>
-
-            <button class="add-button" type="submit">Add Address</button>
-        </form>
+    
+                <div class="form-group">
+                    <label for="locality">Locality:</label>
+                    <input type="text" id="locality" name="locality" value="{{ locality }}" class="form-control" required>
+                    
+                </div>
+    
+                <div class="form-group">
+                    <label for="district">District:</label>
+                    <input type="text" id="district" name="district" value="{{ district }}" class="form-control" required>
+                    
+                </div>
+    
+                <div class="form-group">
+                    <label for="state">State:</label>
+                    <input type="text" id="state" name="state" value="{{ state }}" class="form-control" required>
+                    
+                </div>
+    
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country" value="{{ country }}" class="form-control" required>
+                    
+                </div>
+    
+                <div class="form-group">
+                    <label for="pincode">Pincode:</label>
+                    <input type="text" id="pincode" name="pincode" value="{{pincode }}" class="form-control" required>
+                    
+                </div>
+    
+                <button class="add-button" type="submit">Add Address</button>
+            </form>
+        </div>
     </div>
-</div>
+    
+    <br><br><br><br><br><br>
 
-<br><br><br><br><br><br>
 {% endblock content %}

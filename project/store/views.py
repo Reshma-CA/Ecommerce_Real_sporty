@@ -276,7 +276,7 @@ def edituserdetails(request,user_id):
     customerobj = Customers.objects.get(id=user_id)
     return render(request, 'edituserdetails.html', {'customerobj': customerobj})
 
-
+##############################error#################################
 def Add_address(request):
     if request.method == "POST":
         house = request.POST.get("house")
@@ -285,28 +285,160 @@ def Add_address(request):
         state = request.POST.get("state")
         country = request.POST.get("country")
         pincode = request.POST.get("pincode")
+        customer = Customers.objects.get(username=request.session["username"])
 
-        # You'll need to get the user/customer related to this address.
-        # Assuming you have a way to identify the customer, you can replace the following line.
-        # customer = Customers.objects.get(username=request.session["username"])
-
-        # Create a new Address object and save it.
-        address = Address(
+        new_address = Address.objects.create(
             house=house,
             locality=locality,
             district=district,
             state=state,
             country=country,
             pincode=pincode,
-            # customer=customer  # Replace 'customer' with the actual customer object
+            customer=customer 
         )
-        address.save()
 
-        # Redirect to the user profile or an appropriate page
-        return redirect('userprofile')  # Change 'userprofile' to your actual user profile URL name
+        return redirect('userprofile')
 
     return render(request, 'add_address.html')
+##############################error#################################
+
+def Edit_address(request,myid):
+    
+    addressobjs = Address.objects.get(id=myid)
+ 
+    house=addressobjs.house
+    locality=addressobjs.locality
+    state=addressobjs.state
+    country=addressobjs.country
+    pincode=addressobjs.pincode
+    district=addressobjs.district
+    # id=addressobjs.id
+
+    if request.method == "POST":
+        addressobjs = Address.objects.get(id=myid)
+        house = request.POST["house"]
+        locality = request.POST["locality"]
+        district = request.POST["district"]
+        state = request.POST["state"]
+        country = request.POST["country"]
+        pincode = request.POST["pincode"]
+
+        addressobjs.house=house
+        addressobjs.locality=locality
+        addressobjs.district=district
+        addressobjs.state=state
+        addressobjs.country=country
+        addressobjs.pincode=pincode
+
+        addressobjs.save()
+        return redirect('userprofile')
+
+
+    return render(request, 'edit_address.html',{"house":house,"locality":locality,"state":state,"country":country,"pincode":pincode,"district":district }) 
+    
+  
+# def editsubmit(request,myid):
+#     if request.method == "POST":
+#         addressobjs = Address.objects.get(id=myid)
+#         house = request.POST["house"]
+#         locality = request.POST["locality"]
+#         district = request.POST["district"]
+#         state = request.POST["state"]
+#         country = request.POST["country"]
+#         pincode = request.POST["pincode"]
+
+#         addressobjs.house=house
+#         addressobjs.locality=locality
+#         addressobjs.district=district
+#         addressobjs.state=state
+#         addressobjs.country=country
+#         addressobjs.pincode=pincode
+
+#         addressobjs.save()
+#         return redirect('userprofile')
+        
+
+        
+        
+ 
+
+    # return render(request, 'edit_address.html',{"house":house,"locality":locality,"state":state,"country":country,"pincode":pincode,"district":district,"id":id})   
+
+def checkout(request):
+    username = request.session["username"]
+    customer = Customers.objects.get(username=username)
+    addressobjs = Address.objects.filter(customer=customer)
+
+
+    cartobj = Cart.objects.filter(user=customer)
+    subtotal=0
+    for item in cartobj:
+        subtotal+=item.total
+
+    
+    
+
+    context = {
+        'cartobj':cartobj,
+        'subtotal':subtotal,
+        'addressobjs':addressobjs
+    }
+
+    return render(request,'checkout.html',context)
+    
+def Cash_on_delivery(request):
+    username = request.session["username"]
+    customer = Customers.objects.get(username=username)
+    addressobj = Address.objects.filter(customer=customer)
+    cartobj = Cart.objects.filter(user=customer)
+
+    finalprice = 0
+    for item in cartobj:
+        finalprice += item.total
+
+    orderobj=Order(user=customer,totalamount=finalprice)
+    orderobj.save()
+
+
+
+    for item in cartobj:
+        order_details=Orders_details(user=customer,product=item.product,address=addressobj[0],ordertype="Cash on Delivery",orderstatus="Confirmed",quantity=item.quantity,finalprice=item.total,ordernumber=orderobj)
+        order_details.save()
+        
+
+
+    
+
    
+
+    
+   
+
+
+   
+
+    
+
+
+
+   
+
+    # Fetch the order data for the current user
+    # order = Orders.objects.filter(user=customer).last()
+
+    context = {
+        'addressobj': addressobj,
+        'cartobj': cartobj,
+        'finalprice': finalprice,
+        'orderdate': order.orderdate,
+        'orderstatus': order.orderstatus,
+        'ordertype': order.ordertype,
+        'quantity': order.quantity,
+        'ordernumber': order.ordernumber,
+    }
+
+    return render(request, 'orderplaced.html')
+
 
 def orderplaced(request):
     return render(request,'orderplaced.html') 
@@ -317,8 +449,7 @@ def wallet(request):
 def deliveredproduct(request):
     return render(request,"deliveredproduct.html")
 
-def checkout(request):
-    return render(request,'checkout.html')
+
 
 def Register(request):
       if 'username' in request.session:

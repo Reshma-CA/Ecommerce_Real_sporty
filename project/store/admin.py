@@ -30,12 +30,13 @@ class ProductofferUser(admin.ModelAdmin):
 class CouponUser(admin.ModelAdmin):
     list_display=("code","discount_percentage","is_available")
 
-class OrdernumberUser(admin.ModelAdmin):
-    list_display = ("Slno","user","total_amount","coupon","ordertime")
+class Order_detailsUser(admin.ModelAdmin):
+    list_display=("user","product","address","orderdate","orderstatus","ordertype","quantity","finalprice","ordernumber")
+    
 
+class OrderUser(admin.ModelAdmin):
+    list_display = ("user","totalamount","coupon","ordertime")
 
-class OrdersUser(admin.ModelAdmin):
-    list_display=("user","product","orderdate")
 
 class WalletUser(admin.ModelAdmin):
     list_display=("user","amount")
@@ -51,6 +52,6 @@ admin.site.register(Address,AddressUser)
 admin.site.register(Categoryoffer,CategoryofferUser)
 admin.site.register(Productoffer,ProductofferUser)
 admin.site.register(Coupon,CouponUser)
-admin.site.register(Ordernumber,OrdernumberUser)
-admin.site.register(Orders,OrdersUser)
+admin.site.register(Orders_details,Order_detailsUser)
+admin.site.register(Order,OrderUser)
 admin.site.register(Wallet,WalletUser)
