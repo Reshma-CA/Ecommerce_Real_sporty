@@ -239,9 +239,12 @@ label {
 {% comment %} ############################################################## {% endcomment %}
 <br><br>
 
-<div class="container mt-5">
-  {% for customer in customerobj_list %}
-  <div class="col-md-4 border border-1">
+
+<div class="d-flex col-6 mx-5">
+  <div>
+   <div class="container mt-5 ms-5">
+     {% for customer in customerobj_list %}
+     <div class="col-12 border border-1">
       <div class="container formcont">
           <h1 class="block1-name ltext-102 trans-04 p-b-8">Details</h1>
           <div class="user-info">
@@ -279,14 +282,14 @@ label {
   </div>
   {% endfor %}
   
-</div>
+ </div>
 
 
     {% comment %} ######################################################### {% endcomment %}
 
-    <div class="container mt-5">
-      <div class="col-md-4 border border-1">
-        <div class="row mt-4 ml-1">
+    <div class="container mt-5 ms-5 col-12">
+      <div class="col-12 border border-1">
+        <div class="row mt-4 ms-1">
           <div>
             <div class="mt-3">
               <h1 class="block1-name ltext-102 trans-04 p-b-8">Addresses</h1>
@@ -320,12 +323,105 @@ label {
         </div>
       </div>
     </div>
+  </div>
+
     
+
+    {% comment %} 33333333333333333333333333333333333333333333 {% endcomment %}
+
+    
+    
+  <div class="container mt-7 ms-5 col-12">
+
+    <div class=" border border-1">
+
+      <div class="container">
+          
+          <div class="row">
+            <span class="h3 block1-name ltext-102 trans-04 mt-3">
+                Orders
+            </span>
+            {% comment %} <div class="row mt-5"></div>
+            <div class="row mt-5"></div> {% endcomment %}
+        </div>
+
+        <hr>
+        {% if orderobjs %}
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    {% comment %} <th>Sl No</th> {% endcomment %}
+                    <th>Total Price</th>
+                    <th>Coupon</th>
+                    <th>Order Date</th>
+                    <th></th>
+
+                
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in orderobjs %}
+           
+                 
+
+                    <tr >
+                      {% comment %} <td>{{ item.slno }}</td> {% endcomment %}
+                      <td>{{ item.totalamount }}</td>
+                      {% if item.coupon.code %}
+                      <td class="text-success">{{ item.coupon.code }} Coupon Applied &#x2713; </td>
+                      {% else %}
+                      <td class="text-danger">No Coupon</td>  
+                      {% endif %}
+                      <td>{{ item.ordertime }}</td>
+                      <td><a style="color:#717fe0;"  href="{% url 'order_details' item.id  %}"> View details <i class="fas fa-angle-double-right"></i>
+
+
+
+
+                      </a></td>
+                    </tr>
+                 
+                 
+                  
+                    
+                    
+                  {% endfor %}
+                </tbody>
+              </table>
+            
+    
+        </div>
+        {% else %}
+        <span class="block1-name ltext-101 trans-04 p-b-8 mt-3 text-danger">
+          No Orders Yet!
+      </span>
+        {% endif %}
+      
+
+         
+          
+      </div>
+
+
+
+  </div>
+
+
+</div>
+</div>
+
+
+
+    {% comment %} 333333333333333333333333333333333 {% endcomment %}
+
+  </div>
   
   {% comment %} ###################################################################################################33 {% endcomment %}
 
     
-          </div>
+  </div>
       
 </div>
 

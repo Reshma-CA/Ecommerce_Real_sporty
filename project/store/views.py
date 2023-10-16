@@ -15,6 +15,7 @@ from twilio.rest import Client
 import requests
 from django.shortcuts import render, get_object_or_404
 from decimal import Decimal
+from datetime import date
 # from PIL import Image
 # from io import BytesIO
 # from django.core.files.base import ContentFile
@@ -221,7 +222,7 @@ def delete_wishlist_item(request):
 def userprofile(request):
     username = request.session["username"]
     customerobj = Customers.objects.get(username=username)
-    orderobjs = Orders.objects.filter(user=customerobj)
+    orderobjs = Order.objects.filter(user=customerobj)
     addressobjs = Address.objects.filter(customer=customerobj)
     wishlistobjs = Wishlist.objects.filter(user=customerobj)
     cartobjs = Cart.objects.filter(user=customerobj)
@@ -233,7 +234,7 @@ def userprofile(request):
     for item in cartobjs:
         totalsum += item.total
 
-    ordernumberobjs = Ordernumber.objects.filter(user=customerobj)
+    ordernumberobjs = Orders_details.objects.filter(user=customerobj)
 
     # Get a list of all customer objects
     customerobj_list = Customers.objects.filter(username=username)
@@ -336,33 +337,7 @@ def Edit_address(request,myid):
 
     return render(request, 'edit_address.html',{"house":house,"locality":locality,"state":state,"country":country,"pincode":pincode,"district":district }) 
     
-  
-# def editsubmit(request,myid):
-#     if request.method == "POST":
-#         addressobjs = Address.objects.get(id=myid)
-#         house = request.POST["house"]
-#         locality = request.POST["locality"]
-#         district = request.POST["district"]
-#         state = request.POST["state"]
-#         country = request.POST["country"]
-#         pincode = request.POST["pincode"]
 
-#         addressobjs.house=house
-#         addressobjs.locality=locality
-#         addressobjs.district=district
-#         addressobjs.state=state
-#         addressobjs.country=country
-#         addressobjs.pincode=pincode
-
-#         addressobjs.save()
-#         return redirect('userprofile')
-        
-
-        
-        
- 
-
-    # return render(request, 'edit_address.html',{"house":house,"locality":locality,"state":state,"country":country,"pincode":pincode,"district":district,"id":id})   
 
 def checkout(request):
     username = request.session["username"]
@@ -387,61 +362,73 @@ def checkout(request):
     return render(request,'checkout.html',context)
     
 def Cash_on_delivery(request):
-    username = request.session["username"]
-    customer = Customers.objects.get(username=username)
-    addressobj = Address.objects.filter(customer=customer)
-    cartobj = Cart.objects.filter(user=customer)
+    if request.method=="POST":
 
-    finalprice = 0
-    for item in cartobj:
-        finalprice += item.total
+        username = request.session["username"]
+        customer = Customers.objects.get(username=username)
+        cartobj = Cart.objects.filter(user=customer)
+        address_house=request.POST.get("address")
+        addressobj=Address.objects.get(house=address_house)
 
-    orderobj=Order(user=customer,totalamount=finalprice)
-    orderobj.save()
+        finalprice = 0
+        for item in cartobj:
+            finalprice += item.total
+
+        orderobj=Order(user=customer,totalamount=finalprice)
+        orderobj.save()
 
 
 
-    for item in cartobj:
-        order_details=Orders_details(user=customer,product=item.product,address=addressobj[0],ordertype="Cash on Delivery",orderstatus="Confirmed",quantity=item.quantity,finalprice=item.total,ordernumber=orderobj)
-        order_details.save()
+        for item in cartobj:
+            order_details=Orders_details(user=customer,product=item.product,address=addressobj,ordertype="Cash on Delivery",orderstatus="Confirmed",quantity=item.quantity,finalprice=item.total,ordernumber=orderobj)
+            order_details.save()
+            
+
         
+        datevalue=date.today()
+
+        # Fetch the order data for the current user
+        # order = Orders.objects.filter(user=customer).last()
+
+        context = {
+            'addressobj': addressobj,
+            'cartobj': cartobj,
+            'finalprice': finalprice,
+            "date":datevalue,
+            
+          
+        }
+
+        return render(request, 'orderplaced.html',context)
 
 
-    
-
-   
-
-    
-   
+def order_details(request,myid):
 
 
-   
-
-    
+    orderobj=Order.objects.get(id=myid)
+    order_details_objs = Orders_details.objects.filter(ordernumber=orderobj)
 
 
 
-   
+    context = { 'order_details_objs':order_details_objs
+      
+  }
 
-    # Fetch the order data for the current user
-    # order = Orders.objects.filter(user=customer).last()
+    return render(request,'order_details.html',context) 
 
-    context = {
-        'addressobj': addressobj,
-        'cartobj': cartobj,
-        'finalprice': finalprice,
-        'orderdate': order.orderdate,
-        'orderstatus': order.orderstatus,
-        'ordertype': order.ordertype,
-        'quantity': order.quantity,
-        'ordernumber': order.ordernumber,
-    }
+def delete_order(request,myid):
+    # username=request.session["username"]
+    # user=Customers.objects.get(username=username)
+    # orderobj=Order.objects.get(id=myid)
+    order_details_objs = Orders_details.objects.get(id=myid)
 
-    return render(request, 'orderplaced.html')
+    order_details_objs.orderstatus="Cancelled"
+    order_details_objs.save()
+
+    return redirect('userprofile')
 
 
-def orderplaced(request):
-    return render(request,'orderplaced.html') 
+
 
 def wallet(request):
     return render(request,'wallet.html')

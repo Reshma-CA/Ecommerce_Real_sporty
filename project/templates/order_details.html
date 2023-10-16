@@ -1,0 +1,84 @@
+{% extends 'layouts/main.html'%}
+
+{% load static %}
+
+{% block content %}
+
+<br><br><br><br><br>
+<div class="container">
+    <div class="row">
+        <span class="block1-name ltext-102 trans-04 p-b-8 mt-3">
+            Orders Details
+        </span>
+        <div class="row mt-5"></div>
+        <div class="row mt-5"></div>
+    </div>
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status Of Order</th>
+                <th>Payment Type</th>
+                <th>Image</th>
+                <th>Cancel</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order_details_objs %}
+              {% comment %} {% if item.orderstatus != "ReturnRequested" %} {% endcomment %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.finalprice }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.orderdate }}</td>
+                <td>{{ item.orderstatus }}</td>
+                <td>{{ item.ordertype }}</td>
+                <td><img class="img-fluid img-thumbnail" src="{{ item.product.image1.url }}" alt="" width="50" height="50"></td>
+    
+                {% if item.orderstatus != 'Cancelled' %}
+
+                
+                <td >
+                    <a href="{% url 'delete_order' item.id %}" class="text-danger">  <button  type="button" class="btn delete-btn btn-danger" >Cancel</button></td></a>
+                    
+                    
+                
+                {% else %}
+    
+                {% comment %} <td><a href="{% url 'delete_order' item.id %}"><span class="text-danger">Order <div>Cancelled</div> </span></td></a> {% endcomment %}
+
+                <td class="text-danger">Order Cancelled</td>
+
+    
+                
+                {% endif %}
+    
+                {% comment %} <td>
+                  <a href="{% url 'admin_editproducts' item.id %}">
+                    <button class="btn edit-btn btn-warning">Edit</button>
+                  </a>
+                </td>
+                <td>
+                  <a href="{% url 'admin_deleteproducts' item.id %}">
+                    <button class="btn delete-btn btn-danger">Delete</button>
+                  </a>
+                </td> {% endcomment %}
+              </tr>
+              {% comment %} {% endif %} {% endcomment %}
+              {% endfor %}
+            </tbody>
+          </table>
+        
+    
+    </div>
+    
+
+</div>
+<br><br><br><br><br>
+
+{% endblock content %}

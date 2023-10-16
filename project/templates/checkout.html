@@ -110,30 +110,28 @@
     margin: 10px;
 }
 
-/* Style the buttons */
-.btn.essence-btn {
-    background-color: #ff5722;
-    color: #fff;
+
+/* Styling for both buttons */
+.btn.cash-on-delivery,
+.btn.razor-pay {
+    background-color: #ff5722; /* Orange background color for both buttons */
+    color: #fff; /* White text color for both buttons */
     border: none;
-    padding: 12px 24px;
+    padding: 10px 20px; /* Padding to define button size */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-transform: uppercase; /* Uppercase text for both buttons */
+    font-weight: bold; /* Bold text for both buttons */
+    font-size: 16px;
 }
 
-.btn.essence-btn:hover {
-    background-color: #ff4500;
+.btn.cash-on-delivery:hover,
+.btn.razor-pay:hover {
+    background-color: #ff4500; /* Darker orange on hover for both buttons */
 }
 
-.cash-on-delivery {
-    background-color: #ff5722;
-}
 
-.razor-pay {
-    background-color: #ff5722;
-}
-
-    
     
 </style>
 {% endblock custom_css %}
@@ -276,26 +274,15 @@
                 
                         {% if addressobjs %}
 
+                        <form action="{% url 'Cash_on_delivery'%}" method="POST"> {% csrf_token %}
+
                         <select id="addressdropdown" name="address" class="form-control" >
 							{% for item in addressobjs  %}
 							<option value="{{item.house}}">{{item.house}} -  {{item.district}} - {{item.state}} - {{item.country}} <br><br> </option>
 							{% endfor %}
 				
 						</select> 
-                        {% comment %} <ul class="address-list">
-                            {% for addressobj in addressobjs %}
-                            <li class="address-item mb-4">
-                                <div class="address-details">
-                                    <div class="address-line">{{ addressobj.house }}, {{ addressobj.locality }}, {{ addressobj.district }}</div>
-                                    <div class="address-line">{{ addressobj.state }}, {{ addressobj.country }}</div>
-                                    <div class="address-line">Pincode: {{ addressobj.pincode }}</div>
-                                </div>
-                                <div class="edit-button">
-                                    <a href="{% url 'edit_address' addressobj.id %}" class="btn btn-primary">Edit Address</a>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul> {% endcomment %}
+                       
                         {% else %}
                         
                         <p class="no-address-message text-danger">No address added!</p>
@@ -317,23 +304,9 @@
 
     {% comment %} ###################################3 {% endcomment %}
 
-    {% comment %} <div class="order-summary">
-        <h3>Your Order Summary</h3>
-        <div class="subtotal">
-            <span>Subtotal:</span>
-            <span class="subtotal-amount">{{subtotal}}</span>
-        </div>
-    </div>
-    
-    <div class="payment-methods">
-        <h3>Payment Methods</h3>
-        <div class="payment-options">
-            <a href="#" class="btn essence-btn cash-on-delivery">Cash On Delivery</a>
-            <a href="#" class="btn essence-btn razor-pay">Razor Pay</a>
-        </div>
-    </div>
+   
        
-     {% endcomment %}
+    
      <div class="order-summary">
         <h3>Your Order Summary</h3>
         <div class="subtotal">
@@ -345,11 +318,20 @@
     <div class="payment-methods">
         <h3>Payment Methods</h3>
         <div class="payment-options">
-            <a href="{% url 'Cash_on_delivery'%}" class="btn cash-on-delivery">Cash On Delivery</a>
-            <a href="#" class="btn razor-pay">Razor Pay</a>
+            {% comment %} <input type="submit" placeholder="Cash on Delivery"> {% endcomment %}
+            <input type="submit" class="btn razor-pay mr-3" value="Cash on Delivery">
+            
+
+            <button href="#" class="btn razor-pay">Razor Pay</button>
         </div>
-    </div>
+
+        <br><br><br>
+
+    </form>
+</div>
     
+
+
                     
                 
            
