@@ -95,10 +95,25 @@
     <div class="single_product_thumb clearfix" >
         
         <div class="product_thumbnail_slides owl-carousel " style="width:800px;height:800px; padding: 80px;">
+
+            <a href="{{product.image1.url}}" class="MagicZoom">
+                <img src="{{product.image1.url}}" alt="IMG-PRODUCT"  >
+            </a>
+            <a href="{{product.image2.url}}" class="MagicZoom">
+                <img src="{{product.image2.url}}" alt="IMG-PRODUCT"  >
+            </a>
+            <a href="{{product.image3.url}}" class="MagicZoom">
+                <img src="{{product.image3.url}}" alt="IMG-PRODUCT"  >
+            </a>
+            <a href="{{product.image4.url}}" class="MagicZoom">
+                <img src="{{product.image4.url}}" alt="IMG-PRODUCT"  >
+            </a>
+         
+{% comment %} 
             <img src="{{ product.image1.url }}"  alt="">
             <img src="{{ product.image2.url }}"  alt="">
             <img src="{{ product.image3.url }}"  alt="">
-            <img src="{{ product.image4.url }}"  alt=""> 
+            <img src="{{ product.image4.url }}"  alt="">  {% endcomment %}
         </div>
     </div>
 

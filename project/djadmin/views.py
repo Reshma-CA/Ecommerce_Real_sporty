@@ -334,3 +334,26 @@ def blockcategories(request,myid):
         content.save()
         return redirect('acategories')
     
+
+def orders(request):
+    orderobjs=Orders_details.objects.all()
+    # if request.method=="POST":
+    #     entereddate=request.POST["searchitem"]
+    #     orderobjs=Order.objects.filter(orderdate__icontains=entereddate)
+
+
+    return render(request,"tadmin/orders/orders.html",{"orderobjs":orderobjs})
+
+def edit_order_status(request,myid):
+    details = Orders_details.objects.get(id=myid)
+    if request.method=="POST":
+        orderstatus=request.POST.get("orderstatus")
+        details.orderstatus=orderstatus
+        details.save()
+        return redirect("orders")
+
+
+    context = {
+        'orderobjs':details
+    }
+    return render(request,'tadmin/orders/edit_order_ststus.html',context)

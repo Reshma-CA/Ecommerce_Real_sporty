@@ -427,14 +427,46 @@ def delete_order(request,myid):
 
     return redirect('userprofile')
 
+def delivered_product(request):
+    username = request.session['username']
+    userobj = Customers.objects.get(username = username)
+    orderobj = Orders_details.objects.filter(user=userobj)
+    wishlistobj = Wishlist.objects.filter(user = userobj)
 
+    cartobj = Cart.objects.filter(user =  userobj)
+    no_of_cart_items = cartobj.count()
+
+    no_of_wishlist_items = wishlistobj.count()
+
+    totalsum = 0
+    for item in cartobj:
+        totalsum+=item.total
+    
+    context = {
+        'orderobj':orderobj,
+        'cartobj' : cartobj,
+        'totalsum':totalsum,
+        'no_of_cart_items':no_of_cart_items,
+        'no_of_wishlist_items':no_of_wishlist_items
+        
+        
+    }
+
+    return render(request,"deliveredproduct.html",context)
+
+
+def delivered_pdt_return(request,myid):
+    order_details = Orders_details.objects.get(id = myid)
+
+    order_details.orderstatus = "Return Initiated"
+    order_details.save()
+
+    return redirect('userprofile')
 
 
 def wallet(request):
     return render(request,'wallet.html')
 
-def deliveredproduct(request):
-    return render(request,"deliveredproduct.html")
 
 
 
@@ -587,10 +619,12 @@ def Login(request):
 # ############################################################################################################################
     
 def home(request):
-    allcategories=Category.objects.all()
-    allproducts=Products.objects.all()
-    context={"allcategories":allcategories,"allproducts":allproducts}
-    return render(request,'home.html',context)
+    if "username" in request.session:
+        allcategories=Category.objects.all()
+        allproducts=Products.objects.all()
+        context={"allcategories":allcategories,"allproducts":allproducts}
+        return render(request,'home.html',context)
+    return redirect("login-page")
      
     
 def logoutuser(request):

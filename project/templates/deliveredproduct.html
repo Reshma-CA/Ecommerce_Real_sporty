@@ -112,7 +112,7 @@
 
   <div class="container-fluid">
     <div class="row mt-5">
-      {% if orderobjs %}
+      {% if orderobj %}
         <table class="table">
             <thead>
               <tr>
@@ -128,8 +128,8 @@
             </thead>
             <tbody>
                 
-              {% for item in orderobjs %}
-              {% if item.orderstatus == "Delivered" or item.orderstatus == "ReturnRequested" or item.orderstatus == "Returned"  %}
+              {% for item in orderobj %}
+              {% if item.orderstatus == "Delivered" or item.orderstatus == "Return Initiated" or item.orderstatus == "Returned"  %}
               <tr>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.finalprice }}</td>
@@ -139,8 +139,23 @@
                 <td><img class="img-fluid img-thumbnail" src="{{ item.product.image1.url }}" alt="" width="50" height="50"></td>
         
                 {% if item.orderstatus == "Delivered" %}
-                <td id="order{{item.id}}"><button class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Return</button> </td>
-                {% elif item.orderstatus == "ReturnRequested"  %}
+
+                
+                {% comment %} <td id="order{{item.id}}"><button class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Return</button> </td> {% endcomment %}
+
+                <td id="order{{ item.id }}">
+                  <a href="{% url 'delivered_pdt_return' item.id %}" class="btn delete-btn btn-danger">
+                    <button class="btn delete-btn btn-danger">Return</button>
+                  </a>
+                </td>
+                
+
+                {% comment %} <td >
+                  <a href="{% url 'delivered_pdt_return' item.id %}" class="btn delete-btn btn-danger">  <button  type="button" class="btn delete-btn btn-danger" >Return</button></td></a> {% endcomment %}
+
+
+
+                {% elif item.orderstatus == "Return Initiated"  %}
                 <td><span class="text-warning"> Return Initiated</span></td>
                 {% elif item.orderstatus == "Returned" %}
                 <td><span class="text-success"> Returned</span></td>
@@ -153,16 +168,7 @@
                 
                 {% endif %}
         
-                {% comment %} <td>
-                  <a href="{% url 'admin_editproducts' item.id %}">
-                    <button class="btn edit-btn btn-warning">Edit</button>
-                  </a>
-                </td>
-                <td>
-                  <a href="{% url 'admin_deleteproducts' item.id %}">
-                    <button class="btn delete-btn btn-danger">Delete</button>
-                  </a>
-                </td> {% endcomment %}
+                </td> 
               </tr>
               {% endfor %}
             </tbody>
