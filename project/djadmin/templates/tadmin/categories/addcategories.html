@@ -59,7 +59,11 @@ Category Section
     <button type="submit" class="btn btn-primary mt-4">Add</button>
 
     {% comment %} {% endfor %} {% endcomment %}
-  
+    {% if error and "empty" in error %}
+    <span class="text-danger"> {{error.empty}}</span>
+    
+    {% endif %}
+
   </form> 
 
 

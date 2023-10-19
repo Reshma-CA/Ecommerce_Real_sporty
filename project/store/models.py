@@ -1,8 +1,7 @@
 from django.db import models
 import datetime
 from django.db import models
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+
 
 # Create your models here.
 
@@ -15,6 +14,9 @@ class Customers(models.Model):
     password=models.CharField(max_length=200)
     repassword=models.CharField(max_length=200)
     isblocked=models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 
 class Category(models.Model):
@@ -43,6 +45,9 @@ class Products(models.Model):
     image3=models.ImageField(upload_to='store/products/', blank=True)
     image4=models.ImageField(upload_to='store/products/', blank=True)
 
+    def __str__(self):
+        return self.name
+
 class Cart(models.Model):
     user =  models.ForeignKey(Customers,on_delete =models.CASCADE)
     product = models.ForeignKey(Products, on_delete = models.CASCADE)
@@ -58,6 +63,9 @@ class Wishlist(models.Model):
     user = models.ForeignKey(Customers, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
 
+    # def __str__(self):
+    #     return self.product.name
+
 class Address(models.Model):
     customer = models.ForeignKey(Customers,on_delete=models.CASCADE)
     country = models.CharField(max_length = 200)
@@ -67,6 +75,8 @@ class Address(models.Model):
     house = models.CharField(max_length=200)
     pincode = models.PositiveIntegerField()
 
+    def __str__(self):
+        return self.customer.name
 
 class Coupon(models.Model):
     code = models.CharField(max_length = 200, unique = True)

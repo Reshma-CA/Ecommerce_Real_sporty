@@ -16,6 +16,8 @@ import requests
 from django.shortcuts import render, get_object_or_404
 from decimal import Decimal
 from datetime import date
+import razorpay
+from django.conf import settings
 # from PIL import Image
 # from io import BytesIO
 # from django.core.files.base import ContentFile
@@ -27,16 +29,26 @@ from datetime import date
 # Create your views here.
 
 def index(request):
+    messages.error(request,"Please login")
 
     allcategories=Category.objects.filter(isblocked=False)
     allproducts=Products.objects.all()
     context={"allcategories":allcategories,"allproducts":allproducts}
     return render(request,'index.html',context)
 
+def home(request):
+    if "username" in request.session:
+        allcategories=Category.objects.all()
+        allproducts=Products.objects.all()
+        context={"allcategories":allcategories,"allproducts":allproducts}
+        return render(request,'home.html',context)
+    return redirect("login-page")
      
-    #  pricerange=1000
+def whole_products(request):
+    allproducts=Products.objects.all()
+    context={"allproducts":allproducts}
 
-    #  Category.objects.filter(price_gte=pricerange)
+    return render(request,'whole_products.html',context)
      
 
 def category_products(request,id):
@@ -56,34 +68,6 @@ def single_products_details(request,id):
     context = {'product':product}
     return render(request,'single-product-details.html',context)
 
-# def add_to_cart(request):
-#     if request.method == 'POST':
-#         if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
-#             userobj = Customers.objects.get(username=request.session["username"])
-#             product_id = request.POST.get('product_id')
-
-#             try:
-#                 product = Products.objects.get(id=product_id)
-#             except Products.DoesNotExist:
-#                 return redirect('home')  # Redirect to the home page or handle this case as needed
-
-#             # Check if the product is already in the user's cart
-#             existing_cart_item = Cart.objects.filter(user=userobj, product=product).first()
-
-#             if existing_cart_item:
-#                 existing_cart_item.quantity += 1  # Increment the quantity if it already exists
-#                 existing_cart_item.save()
-#             else:
-#                 # Create a new cart item for the product
-#                 cart_item = Cart(user=userobj, product=product, quantity=1, total=product.price)
-#                 cart_item.save()
-
-#             messages.success(request, 'Item added to cart')
-#             return redirect('home')  # Redirect to the home page or handle this as needed
-#         else:
-#             return redirect('login-page')
-#     else:
-#         return redirect('home')  # Redirect to the home page or handle this as needed
 
 def add_to_cart(request):
     if request.method == 'POST':
@@ -108,6 +92,7 @@ def add_to_cart(request):
                 # Create a new cart item for the product
                 cart_item = Cart(user=userobj, product=product, quantity=1, total=product.price)
                 cart_item.save()
+                Wishlist.objects.filter(user=userobj, product = product).delete()
 
             messages.success(request, 'Item added to cart')
             return redirect('home')  # Redirect to the home page or handle this as needed
@@ -345,23 +330,58 @@ def checkout(request):
     addressobjs = Address.objects.filter(customer=customer)
 
 
-    cartobj = Cart.objects.filter(user=customer)
-    subtotal=0
-    for item in cartobj:
-        subtotal+=item.total
 
+    cartobj = Cart.objects.filter(user=customer)
     
-    
+    subtotal=0
+    product_offer_rate = 0  # Initialize variables
+    category_offer_rate = 0  # Initialize variables
+
+    for item in cartobj:
+        subtotal+=float(item.total)
+        # Total = item.product.price
+        
+
+         # Check if there is a product-specific offer for the item
+        product_offer = Productoffer.objects.filter(product=item.product).first()
+        
+        if product_offer:
+            item_discount = float(product_offer.discount) / 100.0  # Convert the Decimal to a float
+            item_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            item.total -= Decimal(item_discount)  # Convert the result back to Decimal
+            product_offer_rate += float(item_discount)  # product_offer discount  find separately
+             
+            # print(item_discount,"item_discount_product rate")
+            print(product_offer_rate,"product_offer_rate")
+        
+
+        # Check if there is a category-specific offer for the item's category
+        category_offer = Categoryoffer.objects.filter(category=item.product.category).first()
+        if category_offer:
+            item_discount = float(category_offer.discount) / 100.0  # Convert the Decimal to a float
+            item_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            item.total -= Decimal(item_discount)  # Convert the result back to Decimal
+            category_offer_rate += float(item_discount)  # category_offer discount  find separately
+
+            print(category_offer_rate,"category_offer_rate")
+            
+        
 
     context = {
         'cartobj':cartobj,
         'subtotal':subtotal,
-        'addressobjs':addressobjs
+        'addressobjs':addressobjs,
+        'product_offer_rate':product_offer_rate,
+        'category_offer_rate':category_offer_rate,
+        # 'Total':Total
     }
 
     return render(request,'checkout.html',context)
+
+
     
-def Cash_on_delivery(request):
+def place_order(request):
+
     if request.method=="POST":
 
         username = request.session["username"]
@@ -374,16 +394,76 @@ def Cash_on_delivery(request):
         for item in cartobj:
             finalprice += item.total
 
-        orderobj=Order(user=customer,totalamount=finalprice)
-        orderobj.save()
-
-
-
-        for item in cartobj:
-            order_details=Orders_details(user=customer,product=item.product,address=addressobj,ordertype="Cash on Delivery",orderstatus="Confirmed",quantity=item.quantity,finalprice=item.total,ordernumber=orderobj)
-            order_details.save()
+        
             
 
+         # Check which payment method is selected
+        payment_method = request.POST.get("payment_method")
+        # Handle cash on delivery logic
+
+        if payment_method == "cash_on_delivery":
+
+            orderobj = Order(user=customer, totalamount=finalprice)
+            orderobj.save()
+            # Create and save order details
+            for item in cartobj:
+                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Cash on Delivery", orderstatus="Pending", quantity=item.quantity, finalprice=item.total, ordernumber=orderobj)
+                order_details.save()
+
+        # Clear the user's cart
+            Cart.objects.filter(user=customer).delete()
+
+            
+
+        elif payment_method == "razorpay":
+            print('razpr pay instance ------------------------------------------------------------')
+            razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
+            razorpay_client = razorpay.Client(
+                                    auth=(
+                                        getattr(settings, 'RAZORPAY_API_KEY', ''),
+                                        getattr(settings, 'RAZORPAY_API_SECRET', ''),
+                                    )
+                                )
+                 # Create a Razorpay order
+            orderobj = Order(user=customer, totalamount=finalprice)
+            orderobj.save()
+            # Create and save order details
+            for item in cartobj:
+                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Razor pay", orderstatus="Pending", quantity=item.quantity, finalprice=item.total, ordernumber=orderobj)
+                order_details.save()
+                finalprice_float = float(finalprice*100)
+            razorpay_order = razorpay_client.order.create({'amount': finalprice_float, 'currency': 'INR'})
+
+
+               
+            
+            
+
+            return render(request, 'razorpay.html', {'order': orderobj, 'razorpay_order': razorpay_order})
+            
+    
+            
+
+                
+            
+        # # Clear the user's cart
+    
+
+            
+        
+        else:
+            messages.error(request,'select a payment method')
+            return redirect('checkout')
+        
+
+         
+    
+
+    # Continue with any other necessary post-order action
+
+
+        
+        # Cart.objects.filter(user=customer).delete()
         
         datevalue=date.today()
 
@@ -400,6 +480,36 @@ def Cash_on_delivery(request):
         }
 
         return render(request, 'orderplaced.html',context)
+    
+def razorpay_success(request):
+    username = request.session["username"]
+    customer = Customers.objects.get(username=username)
+    cartobj = Cart.objects.filter(user=customer)
+    
+
+    
+    # addressobj=Orders_details.objects.get(house=addressobj)
+ 
+
+    finalprice = 0
+    for item in cartobj:
+        finalprice += item.total
+
+    datevalue=date.today()
+
+
+    context = {
+            # 'addressobj': addressobj,
+            'cartobj': cartobj,
+            'finalprice': finalprice,
+            "date":datevalue,
+            
+          
+        }
+    Cart.objects.filter(user=customer).delete()
+    
+
+    return render(request,'razorpay_success.html',context)
 
 
 def order_details(request,myid):
@@ -618,13 +728,7 @@ def Login(request):
 
 # ############################################################################################################################
     
-def home(request):
-    if "username" in request.session:
-        allcategories=Category.objects.all()
-        allproducts=Products.objects.all()
-        context={"allcategories":allcategories,"allproducts":allproducts}
-        return render(request,'home.html',context)
-    return redirect("login-page")
+
      
     
 def logoutuser(request):
@@ -686,8 +790,8 @@ def otp_verify(request):
                     
                     if user is not None:
 
-                        request.session['username'] = user.username 
-                        request.session['phonenumber'] = phonenumber
+                        # request.session['username'] = user.username 
+                        # request.session['phonenumber'] = phonenumber
                         # messages.success(request, "Login completed successfully")
                         return redirect('login-page')
                 except Customers.DoesNotExist:

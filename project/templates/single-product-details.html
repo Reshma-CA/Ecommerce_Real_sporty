@@ -52,8 +52,8 @@
                         </li>
                         
                         <li><a href="contact.html">Contact</a></li>
-                        <li><a href="{% url 'signup'%}">Sign up</a></li>
-                        <li><a href="{% url 'login-page'%}">login</a></li>
+                        {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
+                        <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
                     </ul>
                 </div>
                 <!-- Nav End -->
@@ -125,36 +125,44 @@
         <a href="cart.html">
             <h2>{{product.name}}</h2>
         </a>
-        <p class="product-price"><span class="old-price">$6500.00</span>${{product.price}}</p>
+        <p class="product-price"><span class="old-price">Rs 6500.00</span>Rs{{ product.price}}</p>
         <p class="product-desc">{{product.description}}</p>
        
         <!-- Form -->
-        <form class="cart-form clearfix" method="post">
+        {% comment %} <form class="cart-form clearfix" method="post"> {% endcomment %}
             <!-- Select Box -->
-            <div class="select-box d-flex mt-50 mb-30">
-                <select name="select" id="productSize" class="mr-5">
-                    <option value="value">Size: XL</option>
-                    <option value="value">Size: X</option>
-                    <option value="value">Size: M</option>
-                    <option value="value">Size: S</option>
-                </select>
-                <select name="select" id="productColor">
-                    <option value="value">Color: Black</option>
-                    <option value="value">Color: White</option>
-                    <option value="value">Color: Red</option>
-                    <option value="value">Color: Purple</option>
-                </select>
-            </div>
+           
             <!-- Cart & Favourite Box -->
             <div class="cart-fav-box d-flex align-items-center">
+                {% comment %} {% for item in product %} {% endcomment %}
                 <!-- Cart -->
-                <button type="submit" name="addtocart" value="5" class="btn essence-btn">Add to cart</button>
-                <!-- Favourite -->
-                <div class="product-favourite ml-4">
-                    <a href="#" class="favme fa fa-heart"></a>
+                {% comment %} <button type="submit" name="addtocart" value="5" class="btn essence-btn">Add to cart</button> {% endcomment %}
+                <div class="hover-content">
+                    <!-- Add to Cart -->
+                    <form method="post" action="{% url 'add_to_cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <button type="submit" class="btn essence-btn">Add to Cart</button>
+                    </form>
                 </div>
+                
+
+               
+                <!-- Favourite -->
+
+                <form class="ps-5" method="POST" action="{% url 'add_to_wishlist' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="love-button" style="border: none; background: none;">
+                        <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
+                    </button>
+                </form>
+
+                {% comment %} <div class="product-favourite ml-4">
+                    <a href="#" class="favme fa fa-heart"></a>
+                </div> {% endcomment %}
             </div>
-        </form>
+        {% comment %} </form> {% endcomment %}
     </div>
 </section>
 

@@ -132,6 +132,7 @@
 }
 
 
+
     
 </style>
 {% endblock custom_css %}
@@ -262,7 +263,11 @@
                         <div class="item-details">
                             <div class="item-name"> Item Name: {{ item.product.name }}</div>
                             <div class="item-quantity"> Quantity: {{ item.quantity }}</div>
-                            <div class="item-total"> Total: {{ item.total }}</div>
+                            <div class="item-total"> product actual price: {{ item.total|floatformat:2 }}</div>
+                            <div class="item-total"> Product_offer Discount: {{ product_offer_rate|floatformat:2 }}</div>
+                            <div class="item-total"> Category_offer Discount: {{ category_offer_rate|floatformat:2 }}</div>
+                            <div class="item-total"> After offer added final price: {{ category_offer_rate|floatformat:2 }}</div>
+
                         </div>
                     </li>
                     {% endfor %}
@@ -274,7 +279,7 @@
                 
                         {% if addressobjs %}
 
-                        <form action="{% url 'Cash_on_delivery'%}" method="POST"> {% csrf_token %}
+                        <form action="{% url 'place_order'%}" method="POST"> {% csrf_token %}   
 
                         <select id="addressdropdown" name="address" class="form-control" >
 							{% for item in addressobjs  %}
@@ -312,23 +317,25 @@
         <div class="subtotal">
             <span>Subtotal:</span>
             <span class="subtotal-amount">{{subtotal}}</span>
+            
+
         </div>
     </div>
     
-    <div class="payment-methods">
+     <div class="payment-methods">
         <h3>Payment Methods</h3>
-        <div class="payment-options">
-            {% comment %} <input type="submit" placeholder="Cash on Delivery"> {% endcomment %}
-            <input type="submit" class="btn razor-pay mr-3" value="Cash on Delivery">
-            
+        <form action="{% url 'place_order' %}" method="POST">
+            {% csrf_token %}
+            <input type="radio" name="payment_method" value="cash_on_delivery" id="cash_on_delivery">
+            <label for="cash_on_delivery">Cash on Delivery</label>
+            <br>
+            <input type="radio" name="payment_method" value="razorpay" id="razorpay">
+            <label for="razorpay">Razor Pay</label>
+            <br>
+            <input type="submit" class="btn razor-pay mr-3" value="PLACE ORDER">
+        </form>
+    </div> 
 
-            <button href="#" class="btn razor-pay">Razor Pay</button>
-        </div>
-
-        <br><br><br>
-
-    </form>
-</div>
     
 
 
@@ -337,5 +344,48 @@
            
             
     <!-- ##### Checkout Area End ##### -->
+
+    {% block custom_js %}
+    
+<script>
+	{% for msg in messages %}
+	swal({
+		title: "Warning",
+		text: '{{msg}}',
+		icon: "warning",
+		button: "Ok!",
+	  });
+	  {% endfor %}
+
+
+
+      <button id="razorpay-payment-button">Pay with Razorpay</button>
+
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <script>
+          var options = {
+              key: 'your_api_key',
+              amount: 1000,  // Amount in paisa (e.g., 1000 for ₹10)
+              currency: 'INR',
+              name: 'Your Company',
+              description: 'Purchase Description',
+              order_id: 'razorpay_order_id',  // Replace with the actual order ID obtained from the server
+              handler: function(response) {
+                  // Handle the successful payment here
+                  // You can send the payment ID and other details to your server for verification
+                  alert('Payment successful: ' + response.razorpay_payment_id);
+              }
+          };
+      
+          var rzp = new Razorpay(options);
+          document.getElementById('razorpay-payment-button').onclick = function() {
+              rzp.open();
+          }
+      </script>
+      
+	  
+</script>
+
+{% endblock custom_js %} 
 
 {% endblock content%}

@@ -1,0 +1,237 @@
+{% extends 'layouts/main.html'%}
+
+{% load static %}
+
+{% block custom_css %}
+<style>
+    .thank-you-container {
+        padding: 50px 0;
+        text-align: center;
+        background-color: #f5f5f5;
+    }
+    
+    .tic-icon {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .thank-you-heading {
+        font-size: 36px;
+        color: #333;
+    }
+    
+    .thank-you-message {
+        font-size: 18px;
+        color: #555;
+        margin: 20px 0;
+    }
+    
+    .total-amount {
+        font-size: 20px;
+        margin: 20px 0;
+    }
+    
+    .back-to-shop-button {
+        background-color: #007BFF; /* Blue color */
+        color: #fff;
+        padding: 15px 30px;
+        font-size: 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    
+    .back-to-shop-button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+    
+    /* Style for the Order Details Card */
+.order-details-card {
+    background-color: #f8f8f8; /* Light gray background color */
+    border: 1px solid #ddd; /* Gray border */
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+/* Style for the Card Header */
+.card-header {
+    background-color: #007BFF; /* Blue color for the header */
+    color: #fff; /* White text color */
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+/* Style for the Order Item Details */
+.order-item {
+    padding: 10px;
+}
+
+/* Style for the Separating Lines */
+.order-item hr {
+    border: none;
+    border-top: 1px solid #ddd; /* Gray line between items */
+}
+
+/* Additional Styles (you can customize these) */
+.order-details-card h2 {
+    font-size: 24px;
+}
+
+.order-item p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+    
+    
+</style>
+{% endblock custom_css %}
+
+{% block content %}
+
+   <!-- ##### Header Area Start ##### -->
+   <header class="header_area">
+    <div class="classy-nav-container breakpoint-off d-flex align-items-center justify-content-between">
+        <!-- Classy Menu -->
+        <nav class="classy-navbar" id="essenceNav">
+            <!-- Logo -->
+            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <!-- Navbar Toggler -->
+            <div class="classy-navbar-toggler">
+                <span class="navbarToggler"><span></span><span></span><span></span></span>
+            </div>
+            <!-- Menu -->
+            <div class="classy-menu">
+                <!-- close btn -->
+                <div class="classycloseIcon">
+                    <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                </div>
+                <!-- Nav Start -->
+                <div class="classynav">
+                    <ul>
+                      <li><a href="#">Home</a>
+                        
+                    </li>
+                      <!-- #################################################### -->
+                        <li><a href="#">Shop</a>
+                            <div class="megamenu">
+                                <ul class="single-mega cn-col-4">
+                                    <li class="title">Collections </li>
+                                    <li><a href="shop.html">Badminton Racket &amp; Cock </a></li>
+                                    <li><a href="shop.html">Cricket Bat &amp; Ball</a></li>
+                                    <li><a href="shop.html">Football</a></li>
+                                    
+                                </ul>
+                              
+                                <div class="single-mega cn-col-4">
+                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
+                                </div>
+                            </div>
+                        </li>
+                        <!-- ############################################### -->
+                        <li><a href="#">Pages</a>
+                            <ul class="dropdown">
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="shop.html">Shop</a></li>
+                                <li><a href="single-product-details.html">Product Details</a></li>
+                                <li><a href="checkout.html">Checkout</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="single-blog.html">Single Blog</a></li>
+                                <li><a href="regular-page.html">Regular Page</a></li>
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li><a href="contact.html">Contact</a></li>
+                        
+                    </ul>
+                </div>
+                <!-- Nav End -->
+            </div>
+        </nav>
+
+        <!-- Header Meta Data -->
+        <div class="header-meta d-flex clearfix justify-content-end">
+            <!-- Search Area -->
+            <div class="search-area">
+                <form action="#" method="post">
+                    <input type="search" name="search" id="headerSearch" placeholder="Type for search">
+                    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
+            </div>
+            <!-- Favourite Area -->
+            <div class="favourite-area">
+                <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
+            </div>
+            <!-- User Login Info -->
+            <div class="user-login-info">
+                <a href="{% url 'userprofile'%}"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
+            </div>
+            <!-- Cart Area -->
+            <div class="cart-area">
+                <a href="{% url 'cart' %}" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+            </div>
+
+            <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div>
+        </div>
+
+    </div>
+</header>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="container thank-you-container">
+    <div class="row">
+        <div class="col-md-7 text-center">
+            <div class="thank-you-content">
+                <img src="{% static 'img/bg-img/tic_icon.jpg' %}" class="tic-icon" alt="Order Placed">
+                <h2 class="thank-you-heading">Thank You!</h2>
+                <p class="thank-you-message">Your order has been successfully placed.</p>
+                <p class="total-amount">Total Amount: Rs. {{ finalprice }} /-</p>
+                <a href="{% url 'home'%}" class="btn back-to-shop-button">Back to Shop</a>
+            </div>
+        </div>
+
+
+        <div class="col-md-5">
+            <div class="order-details-card">
+                <div class="card-header">
+                    <h2>Order Details</h2>
+                </div>
+                <div class="card-body">
+                    {% for item in cartobj %}
+                    <div class="order-item">
+                        <p><strong>Product:</strong> {{ item.product.name }}</p>
+                        <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                        <p><strong>Order Date:</strong> {{ date }}</p>
+                        
+                        {% comment %} <p><strong>Shipping Address:</strong> {{ addressobj.house }}</p> {% endcomment %}
+
+                        <p><strong>Product Price:</strong> Rs. {{ finalprice }}</p>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% endblock content %}

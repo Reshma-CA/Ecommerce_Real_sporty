@@ -54,4 +54,22 @@
 
 
 <br><br><br><br>
+
+{% block custom_js %}
+    
+<script>
+	{% for msg in messages %}
+	swal({
+		title: "Success",
+		text: '{{msg}}',
+		icon: "success",
+		button: "Ok!",
+	  });
+	  {% endfor %}
+
+	  
+</script>
+
+{% endblock custom_js %} 
+
   {% endblock content %}

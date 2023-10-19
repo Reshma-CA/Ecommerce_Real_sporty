@@ -277,9 +277,11 @@
                                         <!-- Hover Content -->
                                         <div class="hover-content">
                                             <!-- Add to Cart -->
-                                            <div class="add-to-cart-btn">
-                                                <a href="{% url 'cart'%}" class="btn essence-btn">Add to Cart</a>
-                                            </div>
+                                            <form method="post" action="{% url 'add_to_cart' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ item.id }}">
+                                                <button type="submit" class="btn essence-btn">Add to Cart</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

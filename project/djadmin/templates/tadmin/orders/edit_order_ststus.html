@@ -38,11 +38,13 @@ Add product Section
       <label for="username">Status</label>
       {% comment %} <input value="{{item.orderstatus}}" name="orderstatus" type="number" class="form-control" id="username" placeholder="Enter username"> {% endcomment %}
       <select name="orderstatus" class="form-control" id="orderstatus">
-        <option value="Ordered" {% if item.orderstatus == "Ordered" %}selected{% endif %}>Ordered</option>
-        <option value="Cancelled" {% if item.orderstatus == "Cancelled" %}selected{% endif %}>Cancelled</option>
-        <option value="Shipped" {% if item.orderstatus == "Shipped" %}selected{% endif %}>Shipped</option>
-        <option value="Delivered" {% if item.orderstatus == "Delivered" %}selected{% endif %}>Delivered</option>
+        <option value="Ordered" {% if item.orderstatus == "Ordered" %}selected{% endif %}{% if item.orderstatus == "Shipped" or item.orderstatus == 'Cancelled' or item.orderstatus == 'Delivered' %}disabled{% endif %}>Ordered</option>
+        <option value="Shipped" {% if item.orderstatus == "Shipped" %}selected{% endif %}{% if item.orderstatus == "Cancelled"  or item.orderstatus == "Delivered" %}disabled{% endif %}>Shipped</option>
+        <option value="Delivered" {% if item.orderstatus == "Delivered" %}selected{% endif %}{%if item.orderstatus == "Cancelled" %}disabled{% endif %}>Delivered</option>
         <option value="Returned" {% if item.orderstatus == "Returned" %}selected{% endif %}>Returned</option>
+        <option value="Cancelled" {% if item.orderstatus == "Cancelled" %}selected{% endif %}{% if item.orderstatus == "Delivered"%}{% endif %}>Cancelled</option>
+
+        
     </select>
     </div>
     <button type="submit" class="btn btn-primary mt-4">Update</button>
@@ -61,3 +63,12 @@ Add product Section
     {% endblock custom_js %}
     
       <!-- END BLOCK FOR CUSTOM JS -->
+
+      {% comment %} <select name="order_{{ order.id }}_status" class="form-control text-white" >
+        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %} {% if order.status == 'Cancelled' or order.status == 'Confirm' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}disabled{% endif %}>Pending</option> 
+        <option value="Confirm" {% if order.status == 'Confirm' %}selected{% endif %} {% if order.status == 'Cancelled' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}disabled{% endif %}>Confirm</option>
+        <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %} {% if order.status == 'Cancelled' or order.status == 'Shipped' or order.status == 'Delivered' %}disabled{% endif %}>Processing</option>
+        <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %} {% if order.status == 'Cancelled' or order.status == 'Delivered'  %}disabled{% endif %}>Shipped</option>
+        <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %} {% if order.status == 'Cancelled'  %}disabled{% endif %}>Delivered</option>
+        <option value="Cancel" {% if order.status == 'Cancelled' %}selected{% endif %} {% if order.status == 'Delivered'  %}disabled{% endif %}>Cancelled</option>
+       </select>  {% endcomment %}

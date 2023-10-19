@@ -244,13 +244,20 @@ from django.db import IntegrityError  # Import IntegrityError
 
 def addcategories(request):
     categoryobjs = Category.objects.all()
+   
     if request.method == "POST":
-        name = request.POST.get("name")
-        No_of_items = request.POST.get("No_of_items")  # Make sure the 'name' attribute matches your HTML form
-        image = request.FILES.get("image")
+        print(request.POST)
+        name = request.POST.get("name",None)
+        No_of_items = request.POST.get("No_of_items",None)  # Make sure the 'name' attribute matches your HTML form
+        image = request.FILES.get("image",None)
         error = {}
+        if name == None or No_of_items == None or image == None:
+            error['empty']="Can't submit empty form"
+            return render(request, "tadmin/categories/addcategories.html", {"error": error})
+        
 
         if Category.objects.filter(name=name).exists():
+            
             error["name"] = "Same Category name is not allowed"
         elif len(name) > 20:
             error["name"] = "Category name can at most have 20 letters"

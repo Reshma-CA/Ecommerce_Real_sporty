@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Payment</title>
+</head>
+<body>
+    <div id="payment-container">
+        <form id="razorpay-payment-form">
+            {% csrf_token %}
+            <input type="hidden" name="razorpay_order_id" value="{{ razorpay_order.id }}">
+            <input type="hidden" name="amount" value="{{ razorpay_order.amount }}">
+            <!-- Include other form fields as needed -->
+        </form>
+    </div>
+
+    <!-- Include the Razorpay JavaScript SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Initialize Razorpay with your API key
+        var razorpayOptions = {
+            key: '{{ settings.RAZORPAY_API_KEY }}',  // Corrected key variable
+            amount: {{ razorpay_order.amount }},  // Removed double quotes
+            currency: 'INR',
+            name: 'RealSport',
+            description: 'Payment for Your Order #{{ order.id }}',  // Corrected description
+            order_id: '{{ razorpay_order.id }}',
+            handler: function(response) {
+                // Handle the successful payment
+                
+                //alert('Payment successful: ' + response.razorpay_payment_id);
+                
+                // You can send the payment ID and other details to your server for verification
+                
+                // Redirect the user to an order confirmation page after successful payment
+                window.location.href = '/razorpay_success/?order_id={{orderobj.id}}';
+            },
+            prefill: {
+                name: 'John Doe',
+                email: 'john@example.com',
+                contact: '+1234567890',
+            }
+        };
+
+        var rzp = new Razorpay(razorpayOptions);
+
+        rzp.on('payment.failed', function (response) {
+            // Handle payment failure
+            alert('Payment failed: ' + response.error.description);
+        });
+
+        rzp.open();
+    </script>
+</body>
+</html>
