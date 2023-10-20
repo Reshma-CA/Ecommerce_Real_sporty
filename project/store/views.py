@@ -334,36 +334,89 @@ def checkout(request):
     cartobj = Cart.objects.filter(user=customer)
     
     subtotal=0
+    product_discount=0
+    category_discount=0
+
     product_offer_rate = 0  # Initialize variables
     category_offer_rate = 0  # Initialize variables
+
+    coupon_discount = 0
+    coupon_offer_rate = 0
 
     for item in cartobj:
         subtotal+=float(item.total)
         # Total = item.product.price
-        
+       
+        total=subtotal
 
          # Check if there is a product-specific offer for the item
         product_offer = Productoffer.objects.filter(product=item.product).first()
         
         if product_offer:
-            item_discount = float(product_offer.discount) / 100.0  # Convert the Decimal to a float
-            item_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
-            item.total -= Decimal(item_discount)  # Convert the result back to Decimal
-            product_offer_rate += float(item_discount)  # product_offer discount  find separately
-             
-            # print(item_discount,"item_discount_product rate")
-            print(product_offer_rate,"product_offer_rate")
+            product_discount = float(product_offer.discount) / 100.0  # Convert the Decimal to a float
+            product_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            subtotal -= product_discount
+            
+            product_offer_rate += float(product_discount)  # product_offer discount  find separately
+
+            product_name = product_offer.product.name
+            print(product_name,'//////////////////////////////////////////')
+
+            
+            prod_off = product_offer.discount # eg :15%
+            
+
+        
+        else:
+            prod_off = "No Offer"  # No product offer
+           
         
 
         # Check if there is a category-specific offer for the item's category
         category_offer = Categoryoffer.objects.filter(category=item.product.category).first()
         if category_offer:
-            item_discount = float(category_offer.discount) / 100.0  # Convert the Decimal to a float
-            item_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
-            item.total -= Decimal(item_discount)  # Convert the result back to Decimal
-            category_offer_rate += float(item_discount)  # category_offer discount  find separately
+            category_discount = float(category_offer.discount) / 100.0  # Convert the Decimal to a float
+            category_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            subtotal -= category_discount
+          
+            category_offer_rate += float(category_discount)  # category_offer discount  find separately
 
-            print(category_offer_rate,"category_offer_rate")
+            
+            category_off = category_offer.discount # eg:10%
+
+            category_name = category_offer.category.name
+            print(category_name,'&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+            
+        else:
+            category_off = "No Offer"
+
+
+        # coupon_offer = Coupon.objects.all()
+
+        x=float(item.total)- product_discount
+        y=x-category_discount
+       
+        
+        request.session['totalamount']=subtotal
+
+        # Query all available coupons
+        available_coupons = Coupon.objects.filter(is_available=True)
+
+        
+
+
+        # for coupon in available_coupons:
+        #     if coupon.minprice <= total <= coupon.maxprice:
+        #         coupon_discount += (total * coupon.discount_percentage / 100)
+        #         coupon_offer_rate = float(coupon_discount)
+        #         print(coupon_offer_rate,'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$44')
+
+        # z = y-coupon_offer_rate
+
+        # print(z,'/////////////////////////////////')
+    
+   
+      
             
         
 
@@ -373,13 +426,20 @@ def checkout(request):
         'addressobjs':addressobjs,
         'product_offer_rate':product_offer_rate,
         'category_offer_rate':category_offer_rate,
-        # 'Total':Total
+        'final_price':y,
+        'category_off':category_off,
+        'total':total,
+        'prod_off':prod_off,
+        'product_name':product_name,
+        'category_name':category_name
+
+
+
+        
     }
 
     return render(request,'checkout.html',context)
 
-
-    
 def place_order(request):
 
     if request.method=="POST":
@@ -389,10 +449,11 @@ def place_order(request):
         cartobj = Cart.objects.filter(user=customer)
         address_house=request.POST.get("address")
         addressobj=Address.objects.get(house=address_house)
+        total_amount = request.session.get('totalamount')
 
-        finalprice = 0
-        for item in cartobj:
-            finalprice += item.total
+        # finalprice = 0
+        # for item in cartobj:
+        #     finalprice += item.total
 
         
             
@@ -403,11 +464,11 @@ def place_order(request):
 
         if payment_method == "cash_on_delivery":
 
-            orderobj = Order(user=customer, totalamount=finalprice)
+            orderobj = Order(user=customer, totalamount=total_amount)
             orderobj.save()
             # Create and save order details
             for item in cartobj:
-                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Cash on Delivery", orderstatus="Pending", quantity=item.quantity, finalprice=item.total, ordernumber=orderobj)
+                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Cash on Delivery", orderstatus="Pending", quantity=item.quantity, totalamount=total_amount, ordernumber=orderobj)
                 order_details.save()
 
         # Clear the user's cart
@@ -425,13 +486,13 @@ def place_order(request):
                                     )
                                 )
                  # Create a Razorpay order
-            orderobj = Order(user=customer, totalamount=finalprice)
+            orderobj = Order(user=customer, totalamount=total_amount)
             orderobj.save()
             # Create and save order details
             for item in cartobj:
                 order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Razor pay", orderstatus="Pending", quantity=item.quantity, finalprice=item.total, ordernumber=orderobj)
                 order_details.save()
-                finalprice_float = float(finalprice*100)
+                finalprice_float = float(total_amount*100)
             razorpay_order = razorpay_client.order.create({'amount': finalprice_float, 'currency': 'INR'})
 
 
@@ -473,7 +534,7 @@ def place_order(request):
         context = {
             'addressobj': addressobj,
             'cartobj': cartobj,
-            'finalprice': finalprice,
+            
             "date":datevalue,
             
           

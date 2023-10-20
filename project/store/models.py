@@ -32,6 +32,7 @@ class Categoryoffer(models.Model):
     category = models.ForeignKey(Category,on_delete = models.CASCADE)
     offer_description = models.CharField(max_length = 200)
     discount = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)
 
 
 class Products(models.Model):
@@ -58,6 +59,7 @@ class Productoffer(models.Model):
     product = models.ForeignKey(Products,on_delete = models.CASCADE)
     offer_description = models.CharField(max_length = 200)
     discount = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)
 
 class Wishlist(models.Model):
     user = models.ForeignKey(Customers, on_delete=models.CASCADE)

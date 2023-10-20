@@ -256,22 +256,36 @@
                     <h5>Your Order</h5>
                     <p>The Details</p>
                 </div>
+
                 <ul class="order-details-form mb-4">
                     {% for item in cartobj %}
-                    <li class="order-item">
-                       
-                        <div class="item-details">
-                            <div class="item-name"> Item Name: {{ item.product.name }}</div>
-                            <div class="item-quantity"> Quantity: {{ item.quantity }}</div>
-                            <div class="item-total"> product actual price: {{ item.total|floatformat:2 }}</div>
-                            <div class="item-total"> Product_offer Discount: {{ product_offer_rate|floatformat:2 }}</div>
-                            <div class="item-total"> Category_offer Discount: {{ category_offer_rate|floatformat:2 }}</div>
-                            <div class="item-total"> After offer added final price: {{ category_offer_rate|floatformat:2 }}</div>
+                        
+                            <li class="order-item">
+                                <div class="item-details">
+                                    <div class="item-name"> Item Name: {{ item.product.name }}</div>
+                                    <div class="item-quantity"> Quantity: {{ item.quantity }}</div>
+                                    <div class="item-total"> Product Price: {{ item.total|floatformat:2 }}</div>
+                                    
+                                     
+                                     {% comment %} <div class="item-total"> Product Offer Discount in percentage : {{ prod_off }} </div>
+                                     <div class="item-total"> Product Offer Discount: -{{ product_offer_rate|floatformat:2 }}</div>
+                                     
 
-                        </div>
-                    </li>
+                                      
+                                     <div class="item-total"> Category Offer Discount in percentage : {{ category_off}} % </div>
+                                     <div class="item-total"> Category Offer Discount: -{{ category_offer_rate|floatformat:2 }}</div> {% endcomment %}
+                                     
+
+                                     
+
+                                    
+                                    {% comment %} <div class="item-total"> Final Price: {{ final_price|floatformat:2 }}</div> {% endcomment %}
+                                </div>
+                            </li>
+                        {% comment %} {% endif %} {% endcomment %}
                     {% endfor %}
                 </ul>
+                
 
                 <div class="row">
                     <div class="col-md-4 border border-1 p-4 rounded">
@@ -294,12 +308,14 @@
                         {% endif %}
                         <br><br><br><br>
                         <a href="{% url 'addaddress'  %}" class="btn btn-info add-address-button">+ Add New Address</a>
+
                         
 
                     </div>
                 </div>
                 
                 <br><br><br>
+                
             
             </div>
         </div>
@@ -316,7 +332,21 @@
         <h3>Your Order Summary</h3>
         <div class="subtotal">
             <span>Subtotal:</span>
+            <span class="subtotal-amount">{{total}}</span>
+            <span>Discount</span>
+            <div class="item-total"> Category Offer [{{category_name}}]: {{ category_off}} %</div>
+            <div class="item-total"> Category Offer rate  : -{{ category_offer_rate |floatformat:2}} </div>
+            <div class="item-total"> Product Offer [{{product_name}}] :{{prod_off}} % </div>
+            <div class="item-total"> Product Offer rate  : -{{ product_offer_rate|floatformat:2}} </div>
+            
+                
+            <span>After discount:</span>
             <span class="subtotal-amount">{{subtotal}}</span>
+
+            {% comment %} <div class="item-total"> Product Offer Discount: -{{ product_offer_rate|floatformat:2 }}</div>
+            <div class="item-total"> Category Offer Discount: -{{ category_offer_rate|floatformat:2 }}</div> {% endcomment %}
+
+
             
 
         </div>

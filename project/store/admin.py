@@ -22,10 +22,10 @@ class AddressUser(admin.ModelAdmin):
     list_display=("customer","country","state","district","locality","house","pincode")
 
 class CategoryofferUser(admin.ModelAdmin):
-    list_display=("category","offer_description","discount")
+    list_display=("category","offer_description","discount","is_active")
 
 class ProductofferUser(admin.ModelAdmin):
-    list_display=("product","offer_description","discount")
+    list_display=("product","offer_description","discount","is_active")
 
 class CouponUser(admin.ModelAdmin):
     list_display=("code","discount_percentage","is_available")
