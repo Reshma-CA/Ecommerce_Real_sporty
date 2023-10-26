@@ -131,13 +131,14 @@
                 <td>{{ item.ordertype }}</td>
                 <td><img class="img-fluid img-thumbnail" src="{{ item.product.image1.url }}" alt="" width="50" height="50"></td>
     
-                {% if item.orderstatus != 'Cancelled' %}
+                {% if item.orderstatus != 'Cancelled'  %}
+                {% if item.ordertype == "Cash on Delivery" %}
 
                 
                 <td >
                     <a href="{% url 'delete_order' item.id %}" class="text-danger">  <button  type="button" class="btn delete-btn btn-danger" >Cancel</button></td></a>
                     
-                    
+                    {% endif %}
                 
                 {% else %}
     
@@ -149,18 +150,9 @@
                 
                 {% endif %}
     
-                {% comment %} <td>
-                  <a href="{% url 'admin_editproducts' item.id %}">
-                    <button class="btn edit-btn btn-warning">Edit</button>
-                  </a>
-                </td>
-                <td>
-                  <a href="{% url 'admin_deleteproducts' item.id %}">
-                    <button class="btn delete-btn btn-danger">Delete</button>
-                  </a>
-                </td> {% endcomment %}
+                
               </tr>
-              {% comment %} {% endif %} {% endcomment %}
+              
               {% endfor %}
             </tbody>
           </table>

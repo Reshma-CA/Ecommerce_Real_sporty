@@ -1,0 +1,91 @@
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Admin Dashboard
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Delete Product Offer Section
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+    {% comment %} <div class="form-group mt-2">
+      
+      <label for="username">Product Name</label>
+      <select class="form-control" id="dropdown" name="productname">
+        {% for item in productobjs  %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endfor %}
+  
+      </select> 
+    </div>
+  {% endcomment %}
+  <div class="form-group mt-2">
+      
+      
+    <label for="username">Product Name</label>
+    <input value="{{ content.product.name }}" name="name" type="text" class="form-control" id="username" placeholder="Enter product Name" readonly>
+
+</div>
+      <div>
+
+        <label for="username">Offer</label>
+      <input value="{{content.offer_description}}" name="offer_description" type="text" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+
+      <div>
+
+        <label for="username">Discount</label>
+      <input value="{{content.discount}}" name="discount" type="number" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+      <div>
+        
+        <button type="submit" class="btn btn-primary mt-4">Delete</button>
+        <h5> {{error}}</h5>
+
+    </div>
+
+      
+
+
+    </div>
+    
+    
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+
+
+{% endblock page_content %}
+
+<!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+
+<!-- BLOCK FOR CUSTOM JS -->
+
+{% block custom_js %}
+{% endblock custom_js %}
+
+  <!-- END BLOCK FOR CUSTOM JS -->

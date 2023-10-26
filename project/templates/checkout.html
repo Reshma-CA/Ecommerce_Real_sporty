@@ -131,6 +131,76 @@
     background-color: #ff4500; /* Darker orange on hover for both buttons */
 }
 
+/*////////////////////////////////////////////////////////////*/
+
+h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.subtotal {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.subtotal span {
+    display: block;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.subtotal-amount {
+    font-weight: bold;
+}
+
+.item-total {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.block-title {
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.mb-4 {
+    margin-bottom: 20px;
+}
+
+select.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.apply-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+    .custom-select-container {
+        text-align: center;
+    }
+
+    .custom-select-container select {
+        display: inline-block;
+        text-align: left;
+    }
+</style>
 
 
     
@@ -205,10 +275,10 @@
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
             <div class="search-area">
-                <form action="#" method="post">
+                {% comment %} <form action="#" method="post">
                     <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </form>
+                </form> {% endcomment %}
             </div>
             <!-- Favourite Area -->
             <div class="favourite-area">
@@ -267,22 +337,9 @@
                                     <div class="item-total"> Product Price: {{ item.total|floatformat:2 }}</div>
                                     
                                      
-                                     {% comment %} <div class="item-total"> Product Offer Discount in percentage : {{ prod_off }} </div>
-                                     <div class="item-total"> Product Offer Discount: -{{ product_offer_rate|floatformat:2 }}</div>
-                                     
-
-                                      
-                                     <div class="item-total"> Category Offer Discount in percentage : {{ category_off}} % </div>
-                                     <div class="item-total"> Category Offer Discount: -{{ category_offer_rate|floatformat:2 }}</div> {% endcomment %}
-                                     
-
-                                     
-
-                                    
-                                    {% comment %} <div class="item-total"> Final Price: {{ final_price|floatformat:2 }}</div> {% endcomment %}
                                 </div>
                             </li>
-                        {% comment %} {% endif %} {% endcomment %}
+                        
                     {% endfor %}
                 </ul>
                 
@@ -291,16 +348,18 @@
                     <div class="col-md-4 border border-1 p-4 rounded">
                         <h3 class="block-title mb-4">Your Addresses</h3>
                 
-                        {% if addressobjs %}
+                        {% if addressobj %}
 
-                        <form action="{% url 'place_order'%}" method="POST"> {% csrf_token %}   
+                     <form action="{% url 'place_order'%}" method="POST"> {% csrf_token %}   
 
                         <select id="addressdropdown" name="address" class="form-control" >
-							{% for item in addressobjs  %}
-							<option value="{{item.house}}">{{item.house}} -  {{item.district}} - {{item.state}} - {{item.country}} <br><br> </option>
+							{% for item in addressobj  %}
+							<option value="{{item.id}}">{{item.house}} -  {{item.district}} - {{item.state}} - {{item.country}} <br><br> </option>
 							{% endfor %}
 				
 						</select> 
+
+                    
                        
                         {% else %}
                         
@@ -309,7 +368,7 @@
                         <br><br><br><br>
                         <a href="{% url 'addaddress'  %}" class="btn btn-info add-address-button">+ Add New Address</a>
 
-                        
+                     {% comment %} </form> {% endcomment %}
 
                     </div>
                 </div>
@@ -330,40 +389,89 @@
     
      <div class="order-summary">
         <h3>Your Order Summary</h3>
+
+
         <div class="subtotal">
             <span>Subtotal:</span>
             <span class="subtotal-amount">{{total}}</span>
             <span>Discount</span>
-            <div class="item-total"> Category Offer [{{category_name}}]: {{ category_off}} %</div>
-            <div class="item-total"> Category Offer rate  : -{{ category_offer_rate |floatformat:2}} </div>
-            <div class="item-total"> Product Offer [{{product_name}}] :{{prod_off}} % </div>
-            <div class="item-total"> Product Offer rate  : -{{ product_offer_rate|floatformat:2}} </div>
+            {% for k, v in category_offer.items %}
+            {% if category_off == "No Offer" %}
+                <div class="item-total"> {{ k }} Offer : {{ v }}% </div>
+            {% else %}
+                <div class="item-total"> {{ k }} Offer : {{ v }} </div>
+            {% endif %}
+            {% endfor %}
+            <div class="item-total"> Category Offer rate: -{{ category_offer_rate | floatformat:2 }}</div>
+            <div class="item-total"> Product Offer</div>
+            {% for k,v in product_offer_values.items  %}
+            {% if prod_off == "No Offer" %}
+            <div class="item-total"> {{k}} Offer : {{v}}% </div>
+            {% else %}
+            <div class="item-total"> {{k}} Offer : {{v}} </div>
+            {% endif %}
+            {% endfor %}
             
-                
-            <span>After discount:</span>
-            <span class="subtotal-amount">{{subtotal}}</span>
+            <div class="item-total"> Product Offer rate: -{{ product_offer_rate | floatformat:2 }}</div>
 
-            {% comment %} <div class="item-total"> Product Offer Discount: -{{ product_offer_rate|floatformat:2 }}</div>
-            <div class="item-total"> Category Offer Discount: -{{ category_offer_rate|floatformat:2 }}</div> {% endcomment %}
+           
 
-
-            
-
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-5">
+                <div class="order-details-confirmation">
+                    <h3 class="block-title mb-4">Available coupons</h3>
+         
+                    {% comment %} {% if available_coupons %} {% endcomment %}
+        
+                    {% comment %} <form action="{% url 'checkout' %}" method="POST">
+                        {% csrf_token %} {% endcomment %}
+                        <div class="row justify-content-center">
+                            <select id="couponid" name="coupons" class="form-control">
+                                {% for item in available_coupons %}
+                                
+                                <option id="nil" data-category-id="{{item.id}}" value="{{item.code}}">{{item.code}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <div class="text-center mt-2">
+                            <div  id = "applycoupon" class="btn btn-primary apply-button">Apply Coupon</div>
+                        </div>
+                    {% comment %} </form> {% endcomment %}
+        
+                    {% comment %} {% endif %}  {% endcomment %}
+                </div>
+            </div>
         </div>
     </div>
+    
+    
+            <span>After discount:</span>
+            {% comment %} <span class="subtotal-amount">{{subtotal}}</span> {% endcomment %}
+            <span id = "totalamount" class="subtotal-amount">{{final_price | floatformat:2}}</span>
+        </div>
+
+
+    </div>
+
+        
+       
     
      <div class="payment-methods">
         <h3>Payment Methods</h3>
         <form action="{% url 'place_order' %}" method="POST">
-            {% csrf_token %}
+            {% csrf_token %} 
             <input type="radio" name="payment_method" value="cash_on_delivery" id="cash_on_delivery">
             <label for="cash_on_delivery">Cash on Delivery</label>
             <br>
             <input type="radio" name="payment_method" value="razorpay" id="razorpay">
             <label for="razorpay">Razor Pay</label>
+            
             <br>
             <input type="submit" class="btn razor-pay mr-3" value="PLACE ORDER">
         </form>
+        <br><br>
     </div> 
 
     
@@ -387,10 +495,10 @@
 	  });
 	  {% endfor %}
 
+</script>
 
-
+      
       <button id="razorpay-payment-button">Pay with Razorpay</button>
-
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <script>
           var options = {
@@ -412,9 +520,72 @@
               rzp.open();
           }
       </script>
+
+    
+    
       
 	  
+
+
+<script>
+    $("#applycoupon").one("click",function(){
+        if (firstclick==true) {
+           return; // Exit the function if a request is already in progress
+       }
+       
+       var firstclick=true;
+       
+       var couponid=$("#couponid").val();
+       var totalamount=$("#totalamount").html()
+       console.log(couponid,'dfjidsppppppppppppppppppppppppppppppppppppppp')
+       $.ajax({
+           url:"/applycouponajax/",
+           type:"GET",
+           data:{
+
+               couponid:couponid,
+               totalamount:totalamount
+           },
+           success:function(response){
+               var discounted_amount=response.amount;
+               //var couponmessage=response.message;
+               $("#totalamount").html(discounted_amount);
+
+               if (response.message_success){
+                   $("#couponmessage").html(response.message_success +" &#x2713;").addClass("text-success");
+
+               }
+               else if(response.message){
+                   $("#couponmessage").html(response.message).addClass("text-danger");
+
+               }
+
+
+
+               //$("#couponmessage").html(couponmessage);
+               
+
+           },
+           error: function(xhr, status, error) {
+               
+               console.log(error);
+             }
+
+
+
+
+
+       })
+
+
+
+   })
+   
+   
+
+
 </script>
+
 
 {% endblock custom_js %} 
 

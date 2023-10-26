@@ -38,12 +38,12 @@ Add product Section
       <label for="username">Status</label>
       {% comment %} <input value="{{item.orderstatus}}" name="orderstatus" type="number" class="form-control" id="username" placeholder="Enter username"> {% endcomment %}
       <select name="orderstatus" class="form-control" id="orderstatus">
+     
         <option value="Ordered" {% if item.orderstatus == "Ordered" %}selected{% endif %}{% if item.orderstatus == "Shipped" or item.orderstatus == 'Cancelled' or item.orderstatus == 'Delivered' %}disabled{% endif %}>Ordered</option>
         <option value="Shipped" {% if item.orderstatus == "Shipped" %}selected{% endif %}{% if item.orderstatus == "Cancelled"  or item.orderstatus == "Delivered" %}disabled{% endif %}>Shipped</option>
         <option value="Delivered" {% if item.orderstatus == "Delivered" %}selected{% endif %}{%if item.orderstatus == "Cancelled" %}disabled{% endif %}>Delivered</option>
+        {% comment %} <option value="Cancelled" {% if item.orderstatus == "Cancelled" %}selected{% endif %}{% if item.orderstatus == "Delivered"%}{% endif %}>Cancelled</option> {% endcomment %}
         <option value="Returned" {% if item.orderstatus == "Returned" %}selected{% endif %}>Returned</option>
-        <option value="Cancelled" {% if item.orderstatus == "Cancelled" %}selected{% endif %}{% if item.orderstatus == "Delivered"%}{% endif %}>Cancelled</option>
-
         
     </select>
     </div>

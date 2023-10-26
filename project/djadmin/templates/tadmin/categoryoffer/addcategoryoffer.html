@@ -1,0 +1,88 @@
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Admin Dashboard
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Add Category offer Section
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+  <div class="form-group mt-2">
+    {% comment %} {% for item in content  %} {% endcomment %}
+    <label for="inputPassword">Category</label>
+    <select class="form-control" id="dropdown" name="categoryname">
+      {% for item in categoryobjs  %}
+      <option value="{{item.name}}">{{item.name}}<br><br> </option>
+      {% endfor %}
+
+    </select> 
+
+
+
+    <div>
+
+      <label class="mt-4" for="username">Offer</label>
+    <input value="{{obj.noofitems}}" name="offer" type="text" class="form-control" id="username" placeholder="Enter Offer">
+
+    </div>
+    
+
+    <div>
+
+      <label class="mt-4" for="username">Discount</label>
+    <input value="{{obj.noofitems}}" name="discount" type="number" class="form-control" id="username" placeholder="Enter Discount">
+
+    </div>
+
+    
+
+    {% comment %} <div class="mb-3">
+      <label for="image">Image</label>
+      <div class="card-img-top">
+       
+      </div>
+      <input type="file" class="form-control" id="image" name="image" accept="image/*">
+    </div> {% endcomment %}
+
+
+  </div>
+  <button type="submit" class="btn btn-primary mt-4">Add</button>
+  <h5> {{error}} {{duplicate}}</h5>
+  {% comment %} {% endfor %} {% endcomment %}
+
+</form> 
+
+
+{% endblock page_content %}
+
+    <!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+    
+    <!-- BLOCK FOR CUSTOM JS -->
+    
+    {% block custom_js %}
+    {% endblock custom_js %}
+    
+      <!-- END BLOCK FOR CUSTOM JS -->

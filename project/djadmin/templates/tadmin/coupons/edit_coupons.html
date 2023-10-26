@@ -1,0 +1,105 @@
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Edit coupon section
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Edit coupon section
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Coupon Code </label>
+
+      <input value="{{couponobj.code}}" name="code" type="text" class="form-control" id="username" placeholder="Enter username">
+
+
+    </div>
+ 
+      <div>
+
+        <label for="username">Discount</label>
+      <input value="{{couponobj.discount_percentage}}" name="discount_percentage" type="text" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+
+      <div>
+
+        <label for="username">Min Price</label>
+      <input value="{{couponobj.minprice}}" name="minprice" type="number" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+
+      <div>
+
+        <label for="username">Max Price</label>
+      <input value="{{couponobj.maxprice}}" name="maxprice" type="number" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+
+      <div>
+
+        <label for="username">Is available</label>
+        <select class="form-control" name="is_available" id="">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+
+      </div>
+
+
+
+
+      <div>
+        
+        <button type="submit" class="btn btn-primary mt-4">Update</button>
+        <h5> {{error}}</h5>
+
+    </div>
+
+      
+
+
+    </div>
+    
+    
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+
+
+
+
+{% endblock page_content %}
+
+    <!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+    
+    <!-- BLOCK FOR CUSTOM JS -->
+    
+    {% block custom_js %}
+    {% endblock custom_js %}
+    
+      <!-- END BLOCK FOR CUSTOM JS -->

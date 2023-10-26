@@ -15,9 +15,22 @@ from twilio.rest import Client
 import requests
 from django.shortcuts import render, get_object_or_404
 from decimal import Decimal
-from datetime import date
+from datetime import date,datetime
 import razorpay
 from django.conf import settings
+from django.http import JsonResponse
+
+
+from django.http import FileResponse
+from django.template.loader import get_template
+from django.views import View
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
+from django.http import FileResponse
+from django.views import View
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 # from PIL import Image
 # from io import BytesIO
 # from django.core.files.base import ContentFile
@@ -27,6 +40,36 @@ from django.conf import settings
 
 
 # Create your views here.
+
+# class GenerateInvoice(View):
+#     def get(self, request):
+#         template = get_template('invoice.html')
+
+#         context = {
+#             'date': 'October 25, 2023',
+#             'customer_name': 'John Doe',
+#             'items': [
+#                 {'product': 'Widget', 'quantity': 5, 'price': 10, 'total': 50},
+#                 # Add more items as needed
+#             ],
+#             'total': 50,
+#         }
+
+#         html = template.render(context)
+#         pdf_file = BytesIO()
+#         p = canvas.Canvas(pdf_file)
+#         p.showPage()
+#         p.drawString(100, 100, "Invoice")  # Optional: Add extra elements
+#         p.drawString(100, 80, "Order Date: October 25, 2023")
+#         p.save()
+
+#         response = FileResponse(pdf_file, content_type='application/pdf')
+#         response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+        
+
+#         return response
+
+
 
 def index(request):
     messages.error(request,"Please login")
@@ -68,12 +111,32 @@ def single_products_details(request,id):
     context = {'product':product}
     return render(request,'single-product-details.html',context)
 
+def quantity_update(request):
+    itemid=request.GET["itemid"]
+    quantity=request.GET["quantity"]
+    cartobj=Cart.objects.get(id=itemid)
+    product=cartobj.product
+    cartobj.quantity=quantity
+    sum=Decimal(quantity)*product.price
+    cartobj.total=sum
+    
+    cartobj.save()
+    username=request.session["username"]
+    userobj=Customers.objects.get(username=username)
+    cartobjs=Cart.objects.filter(user=userobj)
+    subtotal=0
+    for item in cartobjs:
+        subtotal+=item.total
+    
+    
+    return JsonResponse({"sum":sum,"subtotal":subtotal})
 
 def add_to_cart(request):
     if request.method == 'POST':
         if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
             userobj = Customers.objects.get(username=request.session["username"])
             product_id = request.POST.get('product_id')
+            
 
             try:
                 product = Products.objects.get(id=product_id)
@@ -283,7 +346,7 @@ def Add_address(request):
             customer=customer 
         )
 
-        return redirect('userprofile')
+        return redirect('checkout')
 
     return render(request, 'add_address.html')
 ##############################error#################################
@@ -322,123 +385,157 @@ def Edit_address(request,myid):
 
     return render(request, 'edit_address.html',{"house":house,"locality":locality,"state":state,"country":country,"pincode":pincode,"district":district }) 
     
-
+from django.shortcuts import render
 
 def checkout(request):
-    username = request.session["username"]
+    # Get the user's username and retrieve customer and address information
+    username = request.session.get("username")
     customer = Customers.objects.get(username=username)
     addressobjs = Address.objects.filter(customer=customer)
 
+    # Initialize variables
+    subtotal = 0
 
+    product_discount = 0
+    category_discount = 0
 
-    cartobj = Cart.objects.filter(user=customer)
-    
-    subtotal=0
-    product_discount=0
-    category_discount=0
-
-    product_offer_rate = 0  # Initialize variables
-    category_offer_rate = 0  # Initialize variables
+    product_offer_rate = 0
+    category_offer_rate = 0
 
     coupon_discount = 0
     coupon_offer_rate = 0
 
+    total = 0
+    z =0
+    category_offer_values={}
+    product_offer_values = {}
+    # Get the user's cart items
+    cartobj = Cart.objects.filter(user=customer)
+    category_names = [item.product.category.name for item in cartobj]
+    product_names = [item.product.name for item in cartobj]
+
+    
+
     for item in cartobj:
-        subtotal+=float(item.total)
-        # Total = item.product.price
-       
-        total=subtotal
+        item.total = item.quantity * item.product.price
 
-         # Check if there is a product-specific offer for the item
+        
+
+        all_products = Products.objects.all()
+        
+        # Check if there is a product-specific offer for the item
         product_offer = Productoffer.objects.filter(product=item.product).first()
-        
         if product_offer:
-            product_discount = float(product_offer.discount) / 100.0  # Convert the Decimal to a float
-            product_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            product_discount = float(product_offer.discount) / 100.0
+            product_discount *= float(item.product.price)
             subtotal -= product_discount
-            
-            product_offer_rate += float(product_discount)  # product_offer discount  find separately
-
-            product_name = product_offer.product.name
-            print(product_name,'//////////////////////////////////////////')
-
-            
-            prod_off = product_offer.discount # eg :15%
-            
-
-        
+            product_offer_rate += float(product_discount)
+            product_name = product_offer.product.name # eg. badminton rachet name
+            prod_off = product_offer.discount  #eg.10%
         else:
-            prod_off = "No Offer"  # No product offer
-           
-        
+            prod_off = "No Offer"
+            product_name = ""
 
+        if product_name in product_names:
+            product_offer_values[product_name] = prod_off
+
+                
+
+        # Get all categories
+        all_categories = Category.objects.all()
+        
         # Check if there is a category-specific offer for the item's category
         category_offer = Categoryoffer.objects.filter(category=item.product.category).first()
         if category_offer:
-            category_discount = float(category_offer.discount) / 100.0  # Convert the Decimal to a float
-            category_discount *= float(item.product.price)  # Convert the Decimal to a float before multiplication
+            category_discount = float(category_offer.discount) / 100.0
+            category_discount *= float(item.product.price)
             subtotal -= category_discount
-          
-            category_offer_rate += float(category_discount)  # category_offer discount  find separately
-
-            
-            category_off = category_offer.discount # eg:10%
-
-            category_name = category_offer.category.name
-            print(category_name,'&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-            
+            category_offer_rate += float(category_discount)
+            category_off = category_offer.discount #eg: 15%
+            category_name = category_offer.category.name  #eg : Badminton
         else:
             category_off = "No Offer"
+            category_name = ""
+        if category_name in category_names:
+            category_offer_values[category_name] = category_off   
 
 
-        # coupon_offer = Coupon.objects.all()
+# Store the 'category_offer_values' dictionary in the user's session
+        request.session['category_offer_values'] = category_offer_values
 
-        x=float(item.total)- product_discount
-        y=x-category_discount
-       
+        request.session['product_offer_values'] = product_offer_values
+        # Calculate total
         
-        request.session['totalamount']=subtotal
+        
+     
+       
 
-        # Query all available coupons
+        totalsum = sum(item.total for item in cartobj)
+        
+
+
+        # x=float(item.total)
+        c = float(totalsum)- float(category_offer_rate)
+        y = float(c) - float(product_offer_rate)
+          
+        
         available_coupons = Coupon.objects.filter(is_available=True)
 
-        
+        for coupon in available_coupons:
+            if coupon.minprice <= y <= coupon.maxprice:
+                coupon_discount += (y * coupon.discount_percentage / 100)
+                # coupon_discount += (y * coupon.discount_percentage / 100)
+                coupon_offer_rate = float(coupon_discount)
 
+        # z = float(y) - float(coupon_offer_rate)
 
-        # for coupon in available_coupons:
-        #     if coupon.minprice <= total <= coupon.maxprice:
-        #         coupon_discount += (total * coupon.discount_percentage / 100)
-        #         coupon_offer_rate = float(coupon_discount)
-        #         print(coupon_offer_rate,'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$44')
+        request.session['totalamount']=y
 
-        # z = y-coupon_offer_rate
-
-        # print(z,'/////////////////////////////////')
-    
-   
-      
-            
+     
         
 
     context = {
-        'cartobj':cartobj,
-        'subtotal':subtotal,
-        'addressobjs':addressobjs,
-        'product_offer_rate':product_offer_rate,
-        'category_offer_rate':category_offer_rate,
-        'final_price':y,
-        'category_off':category_off,
-        'total':total,
-        'prod_off':prod_off,
-        'product_name':product_name,
-        'category_name':category_name
-
-
-
-        
+        'cartobj': cartobj,
+        'subtotal': subtotal,
+        'addressobj': addressobjs,
+        'product_offer_rate': product_offer_rate,
+        'category_offer_rate': category_offer_rate,
+        'final_price': y,
+        'category_off': category_off,
+        'total': totalsum,
+        'prod_off': prod_off,
+        'product_name': product_name,
+        'category_name': category_name,
+        'available_coupons': available_coupons,
+        'category_offer': category_offer_values,
+        'product_offer_values':product_offer_values
     }
 
-    return render(request,'checkout.html',context)
+    return render(request, 'checkout.html', context)
+
+def applycouponajax(request):
+    
+    couponid=request.GET["couponid"]
+    total=float(request.GET["totalamount"])
+    couponobj=Coupon.objects.get(code=couponid)
+    if total<couponobj.minprice:
+        reqamount=couponobj.minprice-total
+        discounted_amount=total
+        message=f"Sorry add {reqamount} to apply for this coupon"
+        return JsonResponse({"amount":discounted_amount,"message":message})
+        
+    else:
+
+        discounted_amount=total-((couponobj.discount_percentage/100)*total)
+        discounted_amount = round(discounted_amount, 2)
+        
+
+        message_success=f"{couponid} - Coupon applied"
+        request.session["applied_coupon_amd"] = discounted_amount
+        request.session["coupon"]=couponobj.code
+        return JsonResponse({"amount":discounted_amount,"message_success":message_success})
+    
+
 
 def place_order(request):
 
@@ -448,12 +545,11 @@ def place_order(request):
         customer = Customers.objects.get(username=username)
         cartobj = Cart.objects.filter(user=customer)
         address_house=request.POST.get("address")
-        addressobj=Address.objects.get(house=address_house)
-        total_amount = request.session.get('totalamount')
+        addressobj=Address.objects.get(id=address_house)
+        # address_queryset = Address.objects.filter(house=address_house)
+        total_price = request.session.get('totalamount')
 
-        # finalprice = 0
-        # for item in cartobj:
-        #     finalprice += item.total
+        
 
         
             
@@ -464,12 +560,13 @@ def place_order(request):
 
         if payment_method == "cash_on_delivery":
 
-            orderobj = Order(user=customer, totalamount=total_amount)
+            orderobj = Order(user=customer, totalamount=total_price)
             orderobj.save()
             # Create and save order details
             for item in cartobj:
-                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Cash on Delivery", orderstatus="Pending", quantity=item.quantity, totalamount=total_amount, ordernumber=orderobj)
+                order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Cash on Delivery", orderstatus="Pending", quantity=item.quantity, finalprice=total_price, ordernumber=orderobj)
                 order_details.save()
+                
 
         # Clear the user's cart
             Cart.objects.filter(user=customer).delete()
@@ -486,14 +583,18 @@ def place_order(request):
                                     )
                                 )
                  # Create a Razorpay order
-            orderobj = Order(user=customer, totalamount=total_amount)
+            orderobj = Order(user=customer, totalamount=total_price)
             orderobj.save()
             # Create and save order details
             for item in cartobj:
                 order_details = Orders_details(user=customer, product=item.product, address=addressobj, ordertype="Razor pay", orderstatus="Pending", quantity=item.quantity, finalprice=item.total, ordernumber=orderobj)
                 order_details.save()
-                finalprice_float = float(total_amount*100)
-            razorpay_order = razorpay_client.order.create({'amount': finalprice_float, 'currency': 'INR'})
+                finalprice_float = float(total_price*100)
+
+            if "applied_coupon_amd" in request.session:
+                print(request.session["applied_coupon_amd"],)
+                total_price = int(request.session["applied_coupon_amd"])*100
+            razorpay_order = razorpay_client.order.create({'amount':total_price , 'currency': 'INR'})
 
 
                
@@ -524,23 +625,73 @@ def place_order(request):
 
 
         
-        # Cart.objects.filter(user=customer).delete()
+        
+        
         
         datevalue=date.today()
+        if "applied_coupon_amd" in request.session:
+            total_price = request.session["applied_coupon_amd"]
+
 
         # Fetch the order data for the current user
         # order = Orders.objects.filter(user=customer).last()
+        order_detal_obj = Orders_details.objects.filter(user=customer)
+        # for order_detail in order_detal_obj:
+        #    if order_detail:
+        #       print(order_detail.orderstatus,"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+        all_order_details=Orders_details.objects.filter(ordernumber=orderobj)
 
         context = {
             'addressobj': addressobj,
             'cartobj': cartobj,
+            'finalprice':total_price,
+            'order_detal_obj':order_detal_obj,
+            "all_order_details":all_order_details,
             
-            "date":datevalue,
+            "date":datevalue
             
           
         }
 
         return render(request, 'orderplaced.html',context)
+    
+class GenerateInvoice(View):
+    def get(self, request,id):
+        current_date=datetime.now().date()
+        template = get_template('invoice.html')
+        username = request.session.get("username")
+        customer = Customers.objects.get(username=username)
+        # addressobjs = Address.objects.filter(customer=customer)
+        # name = request.session["username"]
+        # customer = Customers.objects.get(username=name)
+        order_detail = Orders_details.objects.get(id=id)
+        # order_detail = Orders_details.objects.filter(user=customer)
+        datevalue=date.today()
+
+        context = {
+            'order_detail': order_detail,
+            'datevalue': datevalue,
+            "date":current_date,
+            # 'items': [
+            #     {'product': 'Widget', 'quantity': 5, 'price': 10, 'total': 50},
+            #     # Add more items as needed
+            # ],
+            # 'total': 50,
+        }
+
+        html = template.render(context)
+        response = self.convert_html_to_pdf(html)
+        response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+        return response
+
+    def convert_html_to_pdf(self, html):
+        result = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+        if not pdf.err:
+            result.seek(0)
+            response = FileResponse(result, content_type='application/pdf')
+            return response
+        return HttpResponse("Error converting HTML to PDF")
     
 def razorpay_success(request):
     username = request.session["username"]

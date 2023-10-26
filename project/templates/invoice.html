@@ -1,0 +1,59 @@
+{% comment %} {% extends 'layouts/main.html'%}
+
+{% load static %}
+
+{% block content %}
+
+<body>
+    <h1>Invoice</h1>
+    <p>Date: {{ date }}</p>
+    <p>Customer: {{ customer_name }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
+                <td>${{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Total: ${{ total }}</p>
+</body>
+
+{% endblock content %} {% endcomment %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+</head>
+<body style="font-family: Arial, sans-serif;">
+    <h1 style="text-align: center;">Invoice</h1>
+    <p>Date: {{ date }}</p>
+    <p>Customer: {{ order_detail.user.name }}</p>
+
+    <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+        <p><strong>Product:</strong> {{ order_detail.product }}</p>
+        <p><strong>Quantity:</strong> {{ order_detail.quantity }}</p>
+        <p><strong>Order Date:</strong> {{ order_detail.orderdate }}</p>
+        <p><strong>Shipping Address:</strong> {{ order_detail.address.house }}, {{ order_detail.address.locality }}, {{ order_detail.address.district }}, {{ order_detail.address.state }}, {{ order_detail.address.country }}, {{ order_detail.address.pincode }}</p>
+        <p><strong>Product Price:</strong> Rs. {{ order_detail.product.price }}</p>
+        <p><strong>Order Type:</strong> {{ order_detail.ordertype }}</p>
+        <p><strong>Order Status:</strong> {{ order_detail.orderstatus }}</p>
+        <p><strong>warranty:</strong> 1 year</p>
+    </div>
+
+    <p style="text-align: right;"><strong>Total: Rs. {{ order_detail.product.price }}</strong></p>
+</body>
+</html>

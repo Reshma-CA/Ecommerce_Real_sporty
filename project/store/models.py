@@ -97,6 +97,8 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.ordertime)
+    
+    
 
     
 class Orders_details(models.Model):
@@ -109,6 +111,11 @@ class Orders_details(models.Model):
     quantity=models.PositiveIntegerField()
     finalprice=models.DecimalField(max_digits=10, decimal_places=2)
     ordernumber=models.ForeignKey(Order,on_delete=models.CASCADE)
+
+    # def __str__(self):
+    #     return str(self.orderdate)
+
+
 
 
 

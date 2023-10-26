@@ -16,10 +16,10 @@
           <a href="{% url 'acategories'%}" ><i class="fas fa-th-list"></i><span>Categories</span></a>
           <a href="{% url 'aproducts'%}" ><i class="fas fa-shopping-cart"></i><span>Products</span></a>
           <a href="{% url 'orders' %}" ><i class="fas fa-shopping-bag"></i><span>Orders</span></a> 
-          <a href="#" ><i class="fas fa-ticket-alt"></i><span>Coupons</span></a>
-          <a href="#" ><i class="fas fa-chart-line"></i><span>Sales Report</span></a>
-          <a href="#" ><i class="fas fa-tags"></i><span>Category Offer</span></a>
-          <a href="#" ><i class="fas fa-percent"></i><span>Product Offer</span></a>
+          <a href="{% url 'categoryoffer'%}" ><i class="fas fa-tags"></i><span>Category Offer</span></a>
+          <a href="{% url 'productoffer'%}" ><i class="fas fa-percent"></i><span>Product Offer</span></a>
+          <a href="{% url 'coupons'%}" ><i class="fas fa-ticket-alt"></i><span>Coupons</span></a>
+          <a href="{% url 'salesreport'%}" ><i class="fas fa-chart-line"></i><span>Sales Report</span></a>
           {% comment %} <ul class="dropdown-menu">
             <li><a class="nav-link" href="index-0.html">General Dashboard</a></li>
             <li class=active><a class="nav-link" href="index.html">Ecommerce Dashboard</a></li>

@@ -83,6 +83,23 @@
     margin: 5px 0;
 }
 
+
+/* Define styles for the button */
+.generate-invoice-button {
+    background-color: #007BFF;
+    color: #FFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    }
+
+/* Hover effect for the button */
+.generate-invoice-button:hover {
+    background-color: #0056b3;
+    }
+</style>
     
     
 </style>
@@ -206,16 +223,38 @@
                     <h2>Order Details</h2>
                 </div>
                 <div class="card-body">
-                    {% for item in cartobj %}
+                    {% for item in all_order_details %}
                     <div class="order-item">
                         <p><strong>Product:</strong> {{ item.product.name }}</p>
                         <p><strong>Quantity:</strong> {{ item.quantity }}</p>
                         <p><strong>Order Date:</strong> {{ date }}</p>
-                        <p><strong>Shipping Address:</strong> {{ addressobj.house }}</p>
-                        <p><strong>Product Price:</strong> Rs. {{ finalprice }}</p>
+                        <p><strong>Shipping Address:</strong> {{ addressobj.house }}, {{addressobj.locality}},{{addressobj.district}},{{addressobj.state}},{{addressobj.country}},{{addressobj.pincode}}</p>
+                        <p><strong>Product Price:</strong> Rs. {{ item.product.price }}</p>
+                        <!-- Example usage in your template -->
+                       {% if order_detal_obj %}
+                       <div class="order-details">
+                       <p><strong>Order Type:</strong> {{ order_detal_obj.0.ordertype }}</p>
+                       <p><strong>Order Status:</strong> {{ order_detal_obj.1.orderstatus }}</p>
+                    <!-- Add other attributes as needed -->
+                      </div>
+                        {% endif %}
+                        {% comment %} <p><strong>order status :</strong> {{ order_detal_obj.ordertype}}</p> {% endcomment %}
                     </div>
+
+
                     <hr>
+                 
+
+                    <form method="get" action="{% url 'generate_invoice' item.id %}">
+                        <button type="submit" name="invoice" class="generate-invoice-button">Generate Invoice</button>
+                    </form>
+
+
+
+                    
                     {% endfor %}
+
+                  
                 </div>
             </div>
         </div>

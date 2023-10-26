@@ -7,13 +7,33 @@
 
 <style>
   /* Style for the "More" button */
-  .wallet-button {
+
+  /* Style for the attractive button */
+.attractive-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #FFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Hover effect for the button */
+.attractive-button:hover {
+    background-color: #0056b3;
+}
+
+  {% comment %} .wallet-button {
     background-color: #800080; /* Purple color for the button */
     color: white;
     font-weight: bold;
-  }
+  } {% endcomment %}
   
-  /* Style for the dropdown items */
+  {% comment %} /* Style for the dropdown items */
   .dropdown-item {
     background-color: #f0380a; /* Green color for the dropdown items */
     color: white;
@@ -44,7 +64,9 @@
   /* Change the background color on hover for better interactivity */
   .dropdown-item-content:hover {
     background-color: #333; /* Dark background color on hover */
-  }
+  } {% endcomment %}
+
+
   
   /* 22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 */
 
@@ -233,8 +255,8 @@ label {
   <!-- ##### Navbar end End ##### -->
 <br><br>
 
-<div class="container">
-  <div class="dropdown">
+{% comment %} <div class="container"> {% endcomment %}
+  {% comment %} <div class="dropdown">
     <button class="btn dropdown-toggle stext-101 cl0 bg1 hov-btn2 p-lr-15 trans-04 mt-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       More
     </button>
@@ -243,16 +265,23 @@ label {
         <div class="dropdown-item-content">
           <i class="fas fa-wallet"></i> <span>Wallet</span>
         </div>
-      </a>
-      <a class="dropdown-item" href="{% url 'delivered_product'  %}">
+      </a> {% endcomment %}
+      <div class="container mt-5">
+      <a href="{% url 'delivered_product' %}" class="attractive-button">
+        <i class="bi bi-basket"></i>
+        <i ></i> Delivered Products
+    </a>
+  </div>
+    
+      {% comment %} <a class="dropdown-item" href="{% url 'delivered_product'  %}">
         <div class="dropdown-item-content">
           <i class="bi bi-basket"></i>
           <i class="fas fa-shopping-cart"></i> <span>Delivered Products</span>
         </div>
       </a>
-    </div>
-  </div>
-</div>
+    </div> {% endcomment %}
+  {% comment %} </div>
+</div> {% endcomment %}
 
 {% comment %} ############################################################## {% endcomment %}
 <br>

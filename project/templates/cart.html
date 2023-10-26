@@ -219,8 +219,8 @@
 	
 							<ul class="order-details-form mb-4">
 								{% comment %} <li><h5>Product</h3> <h5>Total</h5></li> {% endcomment %}
-								<li><h5>Subtotal:</h3> <h5>{{totalsum}}</h5></li>
-								<li><h5>Total:</h3> <h5>Rs.{{totalsum}}</h5></li>
+								<li><h5>Subtotal:</h3> <h5 class = "subtotal">{{totalsum}}</h5></li>
+								<li><h5>Total:</h3> Rs.<h5 class = "subtotal">{{totalsum}}</h5></li>
 							</ul>
 							{% if cartobjs %}
 	                        <br></br>
@@ -240,4 +240,55 @@
 			</div>
 		</div>
 	</div>
+
+
+	{% block custom_js %}
+
+	<script>
+		$(".choosequantity").change(function(){
+			var itemid=$(this).data("item-id");
+			var quantity=$(this).val();
+	
+	
+			$.ajax({
+				url:"/quantityupdate/",
+				type:"GET",
+				data:{
+					itemid:itemid,
+					quantity:quantity
+				},
+				success:function(response){
+					var result=response.sum;
+					var subtotal=response.subtotal;
+					$("#amount"+itemid).html(result);
+					$(".subtotal").html(subtotal)
+				
+					
+	
+				},
+				error: function(xhr, errmsg, err) {
+					
+					console.log(xhr.status + ": " + xhr.responseText);
+				  }
+	
+	
+	
+	
+	
+			})
+	
+	
+	
+		})
+	
+	
+	
+	
+	
+	
+	</script>
+	
+    
+    {% endblock custom_js %}
+
 {% endblock content%}

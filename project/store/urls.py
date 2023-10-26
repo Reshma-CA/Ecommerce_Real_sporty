@@ -1,5 +1,6 @@
 from django.urls import path
 from .import views
+from .views import GenerateInvoice
 
 urlpatterns = [
     path("",views.index,name="index"),
@@ -8,6 +9,7 @@ urlpatterns = [
     path('whole_products/', views.whole_products, name='whole_products'),
     path('category_products/<int:id>', views.category_products, name='category_products'), 
     path('single_p_details/<int:id>',views.single_products_details,name = 'single_p_details'),
+    path("quantityupdate/",views.quantity_update,name="quantityupdate"),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.view_cart, name='cart'),
     path("delete_cart_item/",views.delete_cart_item,name = "delete_cart_item"),
@@ -35,7 +37,9 @@ urlpatterns = [
     path('forgot_password/', views.forg_pass, name='forgot_password'),
     path('forg_verify_otp/', views.forg_verify_otp, name='forg_verify_otp'),
     path('forg_reset_password/', views.forg_reset_password, name='forg_reset_password'),
+    path("applycouponajax/",views.applycouponajax,name="applycouponajax"),
     # path('editsubmit/<int:myid>/', views.editsubmit, name='editsubmit'),
+     path('generate_invoice/<int:id>', GenerateInvoice.as_view(), name='generate_invoice'),
 
 
     # path("products/",views.category_products,name = "products"),

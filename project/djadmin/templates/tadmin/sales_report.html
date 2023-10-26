@@ -1,0 +1,153 @@
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Admin Dashboard
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Product Offer Section
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <h4>
+            Sales Report
+        </h4>
+    </div>
+    {% comment %} <div class="row  justify-content-center mt-5">
+      <h4>
+          Download Sales Report
+      </h4>
+  </div> {% endcomment %}
+
+  <div class="row justify-content-center border mt-2  ">
+      <form action="" method="POST">
+        {% csrf_token %}
+          <label class="mt-5" for="start_date">Start Date:</label>
+          <input class="form-control" type="date" id="start_date" name="start_date" required>
+          <br>
+          <label for="end_date">End Date:</label>
+          <input  class="form-control" type="date" id="end_date" name="end_date" required>
+          <br>
+         
+   
+  
+          <div class="row mb-5">
+            <button name="show" type="submit" class="btn add-product-btn btn-primary mt-2">Show Report</button>
+            <button name="download"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download</button>
+            {% comment %} <button name="downloadinexcel"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download In Excel</button> {% endcomment %}
+              
+  
+          </div>
+          <div>
+            
+
+            
+
+          </div>
+    
+          
+      </form>
+
+  </div>
+  {% if orderobjs %}
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Ordered By</th>
+                <th>Payment Type</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Address</th>
+                
+            
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in orderobjs %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.user.name }}</td>
+                <td>{{ item.ordertype }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.orderdate }}</td>
+                <td>{{ item.orderstatus }}</td>
+                <td>{{ item.address.house }} ,{{ item.address.locality }}</td>
+                
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+    </div>
+    
+    
+    {% endif %}
+    {% if message %}
+    <div class="text-center mt-4 text-danger">
+      {{message}}
+
+
+    </div>
+    {% endif %}
+
+
+    
+    <br><br><br><br>
+</div>
+
+ 
+
+        
+   
+
+
+
+
+
+
+
+{% comment %} <div class="-col-md-5 ml-5 mt-4">
+    
+
+</div> {% endcomment %}
+
+
+
+
+
+
+
+{% endblock page_content %}
+
+<!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+
+<!-- BLOCK FOR CUSTOM JS -->
+
+{% block custom_js %}
+{% endblock custom_js %}
+
+  <!-- END BLOCK FOR CUSTOM JS -->

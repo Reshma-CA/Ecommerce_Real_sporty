@@ -1,0 +1,86 @@
+{% extends 'tadmin/base.html'%}
+
+{% load static %}
+<!-- BLOCK FOR TITLE -->
+
+{% block title %}
+Admin Dashboard
+{% endblock title %}
+
+<!-- END BLOCK FOR TITLE -->
+
+<!-- BLOCK FOR CUSTOM CSS -->
+{% block custom_css %}
+{% endblock custom_css %}
+
+<!--END BLOCK FOR CUSTOM CSS -->
+
+<!-- BLOCK FOR PAGE TITLE -->
+
+{% block page_title %}
+Edit Category offer Section
+
+{% endblock page_title %}
+
+<!-- END BLOCK FOR PAGE TITLE -->
+
+<!-- BLOCK FOR PAGE MAIN CONTENT  -->
+
+{% block page_content %}
+
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Category Name</label>
+      <select class="form-control" id="dropdown" name="categoryname">
+        {% for item in categoryobjs  %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endfor %}
+  
+      </select> 
+    </div>
+ 
+      <div>
+
+        <label for="username">Offer</label>
+      <input value="{{catofferobj.offer_description}}" name="offer_description" type="text" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+
+      <div>
+
+        <label for="username">Discount</label>
+      <input value="{{catofferobj.discount}}" name="discount" type="number" class="form-control" id="username" placeholder="Enter username">
+
+      </div>
+      <div>
+        
+        <button type="submit" class="btn btn-primary mt-4">Update</button>
+        <h5> {{error}}</h5>
+
+    </div>
+
+      
+
+
+    </div>
+    
+    
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+
+
+
+
+{% endblock page_content %}
+
+    <!-- END BLOCK FOR PAGE MAIN CONTENT  -->
+    
+    <!-- BLOCK FOR CUSTOM JS -->
+    
+    {% block custom_js %}
+    {% endblock custom_js %}
+    
+      <!-- END BLOCK FOR CUSTOM JS -->
