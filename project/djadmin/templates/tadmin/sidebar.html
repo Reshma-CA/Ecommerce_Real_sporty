@@ -3,15 +3,15 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
       <div class="sidebar-brand">
-        <a href="index.html">Realsporty</a>
+        <a href="#">Realsporty</a>
       </div>
       <div class="sidebar-brand sidebar-brand-sm">
         <a href="index.html">St</a>
       </div>
       <ul class="sidebar-menu">
-        <li class="menu-header">Dashboard</li>
+        {% comment %} <li class="menu-header">Dashboard</li> {% endcomment %}
         <li class="dropdown active">
-          <a href="{% url 'adminpannel' %}" ><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a> 
+          <a href="{% url 'login'%}" ><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a> 
           <a href="{% url 'ausers'%}" ><i class="fas fa-user"></i><span>User</span></a>
           <a href="{% url 'acategories'%}" ><i class="fas fa-th-list"></i><span>Categories</span></a>
           <a href="{% url 'aproducts'%}" ><i class="fas fa-shopping-cart"></i><span>Products</span></a>

@@ -27,45 +27,6 @@
     background-color: #0056b3;
 }
 
-  {% comment %} .wallet-button {
-    background-color: #800080; /* Purple color for the button */
-    color: white;
-    font-weight: bold;
-  } {% endcomment %}
-  
-  {% comment %} /* Style for the dropdown items */
-  .dropdown-item {
-    background-color: #f0380a; /* Green color for the dropdown items */
-    color: white;
-    font-weight: bold;
-    border: none;
-    margin: 5px 0;
-  }
-  
-  /* Style for the "More" button */
-  .btn.dropdown-toggle.stext-101.cl0.bg1.hov-btn2.p-lr-15.trans-04.mt-3 {
-    background-color: #f00aba; /* Red color for the "More" button */
-    color: white;
-    font-weight: bold;
-  }
-  
-  /* Additional styles for improving the dropdown menu */
-  .dropdown-menu {
-    border: none; /* Remove border */
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-  }
-  
-  /* Define styles for the individual items */
-  .dropdown-item-content {
-    padding: 10px 15px; /* Add padding to the dropdown items */
-    transition: background-color 0.3s; /* Add a smooth transition effect */
-  }
-  
-  /* Change the background color on hover for better interactivity */
-  .dropdown-item-content:hover {
-    background-color: #333; /* Dark background color on hover */
-  } {% endcomment %}
-
 
   
   /* 22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 */
@@ -168,7 +129,7 @@ label {
       <!-- Classy Menu -->
       <nav class="classy-navbar" id="essenceNav">
           <!-- Logo -->
-          <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+          <a class="nav-brand" href="{% url 'home'%}"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
           <!-- Navbar Toggler -->
           <div class="classy-navbar-toggler">
               <span class="navbarToggler"><span></span><span></span><span></span></span>
@@ -182,39 +143,26 @@ label {
               <!-- Nav Start -->
               <div class="classynav">
                   <ul>
-                      <li><a href="#">Shop</a>
-                          <div class="megamenu">
-                              {% for item in allcategories %}
-                              <ul class="single-mega cn-col-4">
-                                  <li class="title" style="background-color: #F79F81;">Collections </li>
-                                  <li><a href="{% url 'category_products' item.id  %}">{{ item.name }} </a></li>
-                                  
-                                  
-                              </ul> 
-                              {% endfor %}
-                              {% comment %} <div class="single-mega cn-col-4">
-                                  <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
-                              </div>
-                          </div> {% endcomment %}
+                      <li><a href="{% url 'whole_products' %}">Shop</a>
+                          
                       </li>
                       <li><a href="#">Pages</a>
                           <ul class="dropdown">
-                              <li><a href="index.html">Home</a></li>
-                              <li><a href="shop.html">Shop</a></li>
-                              <li><a href="single-product-details.html">Product Details</a></li>
-                              <li><a href="checkout.html">Checkout</a></li>
-                              <li><a href="blog.html">Blog</a></li>
-                              <li><a href="single-blog.html">Single Blog</a></li>
-                              <li><a href="regular-page.html">Regular Page</a></li>
-                              <li><a href="contact.html">Contact</a></li>
+                              <li><a href="{% url 'home'%}">Home</a></li>
+                              <li><a href="{% url 'whole_products'%}">Shop</a></li>
+                              
+                              <li><a href="{% url 'blog'%}">Blog</a></li>
+                              
+                              <li><a href="{% url 'contact'%}">Contact</a></li>
                           </ul>
                       </li>
                       
-                      <li><a href="contact.html">Contact</a></li>
+                      <li><a href="{% url 'contact'%}">Contact</a></li>
                       {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
                       <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
                   </ul>
               </div>
+
               <!-- Nav End -->
           </div>
       </nav>
@@ -222,12 +170,12 @@ label {
       <!-- Header Meta Data -->
       <div class="header-meta d-flex clearfix justify-content-end">
           <!-- Search Area -->
-          <div class="search-area">
+          {% comment %} <div class="search-area">
               <form action="#" method="post">
                   <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                   <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
               </form>
-          </div>
+          </div> {% endcomment %}
           <!-- Favourite Area -->
           <div class="favourite-area">
               <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
@@ -353,7 +301,7 @@ label {
     <thead>
       <tr>
         <th>Total Price</th>
-        <th>Coupon</th>
+        {% comment %} <th>Coupon</th> {% endcomment %}
         <th>Order Date</th>
         <th>View Details</th> <!-- Move this column to the end -->
       </tr>
@@ -362,11 +310,11 @@ label {
       {% for item in orderobjs %}
       <tr>
         <td>{{ item.totalamount }}</td>
-        {% if item.coupon.code %}
+        {% comment %} {% if item.coupon %}
         <td class="text-success">{{ item.coupon.code }} Coupon Applied &#x2713;</td>
         {% else %}
-        <td class="text-danger">No Coupon</td>
-        {% endif %}
+        <td class="text-danger">No Coupon</td> {% endcomment %}
+        {% comment %} {% endif %} {% endcomment %}
         <td>{{ item.ordertime }}</td>
         <td>
           <a href="{% url 'order_details' item.id %}" class="btn btn-primary btn-details">

@@ -11,6 +11,42 @@ Admin Dashboard
 
 <!-- BLOCK FOR CUSTOM CSS -->
 {% block custom_css %}
+
+<style>
+    
+    /* Custom pagination styles */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.pagination-link {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination-link:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.current-page {
+    display: inline-block;
+    margin: 0 10px;
+    color: #333;
+}
+
+    
+  
+  </style>
 {% endblock custom_css %}
 
 <!--END BLOCK FOR CUSTOM CSS -->
@@ -83,6 +119,26 @@ Users Section
         </div>
     </div>
 </div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if datas.has_previous %}
+            <a class="pagination-link" href="?page=1">&laquo; first</a>
+            <a class="pagination-link" href="?page={{ datas.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ datas.number }} of {{ datas.paginator.num_pages }}.
+        </span>
+
+        {% if datas.has_next %}
+            <a class="pagination-link" href="?page={{ datas.next_page_number }}">next</a>
+            <a class="pagination-link" href="?page={{ datas.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
 {% endblock page_content %}
 
 

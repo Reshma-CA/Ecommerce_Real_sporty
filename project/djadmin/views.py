@@ -33,22 +33,45 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+
+from django.shortcuts import render
+from django.db.models import Count
+# from .models import Orders_details
+import json
+from django.utils import timezone
+from django.db.models import Sum
+from django.shortcuts import render
+from django.db.models import Sum
+import matplotlib.pyplot as plt
+import io
+import urllib, base64
 # import xlsxwriter
 
 # Create your views here.
 
-@login_required(login_url ="")
-def  adminhome(request):
-     return render(request,'tadmin/adminhome.html')
-
-def  adminpannel(request):
-     return render(request,'tadmin/adminpannel.html')
+  
 
 @never_cache
 def adminilogin(request):
+     orderobjs=Orders_details.objects.all()
 
-     if 'username' in request.session:
-          return render(request,'tadmin/adminhome.html')  
+     if 'ausername' in request.session:
+        payment={}
+        for item in orderobjs:
+            if item.ordertype not in payment:
+                payment[item.ordertype]=1
+            else:
+                payment[item.ordertype]+=1
+        print(payment)
+
+        orders={}
+        for item in orderobjs:
+            if item.product.name not in orders:
+                orders[item.product.name]=1
+            else:
+                orders[item.product.name]+=1
+          
+        return render(request,'tadmin/adminhome.html',{"payment":payment,"orders":orders})  
      
      if request.method=='POST':
         uname=request.POST.get("username")
@@ -58,12 +81,28 @@ def adminilogin(request):
         res=authenticate(request,username=uname,password=pword)
 
         if res is not None:
-            request.session['username']=uname
-            return render(request,'tadmin/adminhome.html')
+            request.session['ausername']=uname
+            orderobjs=Orders_details.objects.all()
+
+
+            orders={}
+            for item in orderobjs:
+                if item.product.name not in orders:
+                    orders[item.product.name]=1
+                else:
+                    orders[item.product.name]+=1
+       
+            payment={}
+            for item in orderobjs:
+                if item.ordertype not in payment:
+                    payment[item.ordertype]=1
+                else:
+                    payment[item.ordertype]+=1
+            print(payment)
+            return render(request,'tadmin/adminhome.html',{"payment":payment,"orders":orders})
         
         else:
-            # error="Invalid Credentials"
-            # return render(request,"adminlogin.html",{"error":error})
+            
             messages.error(request,"Error in login! Invalid Login details!")
             return render(request,"adminlogin.html")
      return render(request,'adminlogin.html')
@@ -71,25 +110,34 @@ def adminilogin(request):
 
 
 def admin_logout(request):
-    if 'username' in request.session:
+    if 'ausername' in request.session:
         request.session.flush()
     return redirect('login')
 
 
+
 def adminusers(request):
+    if "ausername" in request.session:
+        datas = Customers.objects.all()
+        page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+        per_page = 10  # You can change this to your desired number of items per page
 
-    if "username" in request.session:
-        datas=Customers.objects.all()
-
-        if request.method=="POST":
-            enteredname=request.POST.get("searchitem")
+        if request.method == "POST":
+            enteredname = request.POST.get("searchitem")
             datas = Customers.objects.filter(username__istartswith=enteredname)
-            return render(request,"tadmin/users.html",{"datas":datas})
-        
-        return render(request,"tadmin/users.html",{"datas":datas})
+
+        paginator = Paginator(datas, per_page)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger:
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
+        return render(request, "tadmin/users.html", {"datas": datas})
     else:
         return redirect('login')
-    
+
 
 def blockuser(request,id):
     
@@ -230,14 +278,25 @@ def delete_products(request,myid):
 
 @never_cache
 def adminProducts(request):
-   if "username" in request.session:
-        datas=Products.objects.all()
-        if request.method=="POST":
-            enteredproduct=request.POST.get("searchitem")
+    if "ausername" in request.session:
+        datas = Products.objects.all()
+        page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+        per_page = 10  # You can change this to your desired number of items per page
+
+        if request.method == "POST":
+            enteredproduct = request.POST.get("searchitem")
             datas = Products.objects.filter(name__istartswith=enteredproduct)
-            return render(request,"tadmin/products/products.html",{"datas":datas})
-        return render(request,"tadmin/products/products.html",{"datas":datas})
-   else:
+
+        paginator = Paginator(datas, per_page)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger:
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
+        return render(request, "tadmin/products/products.html", {"datas": datas})
+    else:
         return redirect('login')
    
 @never_cache  
@@ -360,17 +419,27 @@ def blockcategories(request,myid):
         return redirect('acategories')
     
 
-    
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def orders(request):
-    orderobjs=Orders_details.objects.all()
-    if request.method=="POST":
-        entereddate=request.POST.get("searchitem")
-        orderobjs=Orders_details.objects.filter(orderdate__istartswith=entereddate)
-        return render(request,"tadmin/orders/orders.html",{"orderobjs":orderobjs})
+    orderobjs = Orders_details.objects.all()
+    page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+    per_page = 10  # You can change this to your desired number of items per page
 
+    if request.method == "POST":
+        entereddate = request.POST.get("searchitem")
+        orderobjs = Orders_details.objects.filter(orderdate__istartswith=entereddate)
 
-    return render(request,"tadmin/orders/orders.html",{"orderobjs":orderobjs})
+    paginator = Paginator(orderobjs, per_page)
+    try:
+        orderobjs = paginator.page(page)
+    except PageNotAnInteger:
+        orderobjs = paginator.page(1)
+    except EmptyPage:
+        orderobjs = paginator.page(paginator.num_pages)
+
+    return render(request, "tadmin/orders/orders.html", {"orderobjs": orderobjs})
+
 
 def edit_order_status(request,myid):
     details = Orders_details.objects.get(id=myid)
@@ -459,16 +528,26 @@ def deletecategory_offer(request, myid):
 
     return render(request, "tadmin/categoryoffer/delete_category_offer.html",{'content':categoryoffer})
 
-def productoffer(request):
-    pdtofferobjs=Productoffer.objects.all()
-    if request.method=="POST":
-            enteredoffer=request.POST.get("searchitem")
-            pdtofferobjs=Productoffer.objects.filter(product__name__istartswith=enteredoffer)
-            context={"pdtofferobjs":pdtofferobjs}
-            return render(request,"tadmin/product_offer/product_offer.html",context)
 
-    context={"pdtofferobjs":pdtofferobjs}
-    return render(request,"tadmin/product_offer/product_offer.html",context)
+def productoffer(request):
+    pdtofferobjs = Productoffer.objects.all()
+    page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+    per_page = 10  # You can change this to your desired number of items per page
+
+    if request.method == "POST":
+        enteredoffer = request.POST.get("searchitem")
+        pdtofferobjs = Productoffer.objects.filter(product__name__istartswith=enteredoffer)
+
+    paginator = Paginator(pdtofferobjs, per_page)
+    try:
+        pdtofferobjs = paginator.page(page)
+    except PageNotAnInteger:
+        pdtofferobjs = paginator.page(1)
+    except EmptyPage:
+        pdtofferobjs = paginator.page(paginator.num_pages)
+
+    context = {"pdtofferobjs": pdtofferobjs}
+    return render(request, "tadmin/product_offer/product_offer.html", context)
 
 def add_product_offer(request):
     
@@ -525,13 +604,26 @@ def delete_product_offer(request, myid):
 
     return render(request, "tadmin/product_offer/delete_product_offer.html",{'content':productoffer})
 
-def coupons(request):  
-    couponobjs=Coupon.objects.all()
-    if request.method=="POST":
-            enteredcoupon=request.POST.get("searchitem")
-            couponobjs=Coupon.objects.filter(code__icontains=enteredcoupon)
-            return render(request,"tadmin/coupons/coupons.html",{"couponobjs":couponobjs})
-    return render(request,"tadmin/coupons/coupons.html",{"couponobjs":couponobjs})
+
+def coupons(request):
+    couponobjs = Coupon.objects.all()
+    page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+    per_page = 10  # You can change this to your desired number of items per page
+
+    if request.method == "POST":
+        enteredcoupon = request.POST.get("searchitem")
+        couponobjs = Coupon.objects.filter(code__icontains=enteredcoupon)
+
+    paginator = Paginator(couponobjs, per_page)
+    try:
+        couponobjs = paginator.page(page)
+    except PageNotAnInteger:
+        couponobjs = paginator.page(1)
+    except EmptyPage:
+        couponobjs = paginator.page(paginator.num_pages)
+
+    return render(request, "tadmin/coupons/coupons.html", {"couponobjs": couponobjs})
+
 
 def add_coupon(request):
 
@@ -607,6 +699,7 @@ def salesreport(request):
             start_date=request.POST.get("start_date")
             end_date=request.POST.get("end_date")
             orderobjs = Orders_details.objects.filter(orderdate__range=[start_date, end_date])
+            
             if orderobjs.count()==0:
                 message="Sorry! No orders in this particular date range"
                 context={"orderobjs":orderobjs,"message":message}
@@ -669,3 +762,7 @@ def salesreport(request):
                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
             
     return render(request,"tadmin/sales_report.html")
+
+
+
+

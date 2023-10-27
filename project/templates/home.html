@@ -10,7 +10,7 @@
         <!-- Classy Menu -->
         <nav class="classy-navbar" id="essenceNav">
             <!-- Logo -->
-            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <a class="nav-brand" href="{% url 'home'%}"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
             <!-- Navbar Toggler -->
             <div class="classy-navbar-toggler">
                 <span class="navbarToggler"><span></span><span></span><span></span></span>
@@ -29,22 +29,21 @@
                         </li>
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
-                                <li><a href="index.html">Home</a></li>
-                                <li><a href="shop.html">Shop</a></li>
-                                <li><a href="single-product-details.html">Product Details</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="blog.html">Blog</a></li>
-                                <li><a href="single-blog.html">Single Blog</a></li>
-                                <li><a href="regular-page.html">Regular Page</a></li>
-                                <li><a href="contact.html">Contact</a></li>
+                                <li><a href="{% url 'home'%}">Home</a></li>
+                                <li><a href="{% url 'whole_products'%}">Shop</a></li>
+                                
+                                <li><a href="{% url 'blog'%}">Blog</a></li>
+                                
+                                <li><a href="{% url 'contact'%}">Contact</a></li>
                             </ul>
                         </li>
                         
-                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="{% url 'contact'%}">Contact</a></li>
                         {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
                         <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
                     </ul>
                 </div>
+
                 <!-- Nav End -->
             </div>
         </nav>
@@ -52,12 +51,12 @@
         <!-- Header Meta Data -->
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
-            <div class="search-area">
+            {% comment %} <div class="search-area">
                 <form action="#" method="post">
                     <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-            </div>
+            </div> {% endcomment %}
             <!-- Favourite Area -->
             <div class="favourite-area">
                 <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
@@ -134,9 +133,9 @@
                 <div class="row h-100 ">
                     <div class="col-6 w-50">
                         <div class="hero-content">
-                            <h6>asoss</h6>
+                            <h6>Realsporty</h6>
                             <h2 style ="color:red;"> New Collection</h2>
-                            <a href="#" class="btn essence-btn">view collection</a>
+                            <a href="{% url 'whole_products'%}" class="btn essence-btn">view collection</a>
                         </div>
                     </div>
                 </div>
@@ -192,7 +191,7 @@
                             <div class="cta--text">
                                 <h6 style="color:green;">-60%</h6>
                                 <h2 style="color:red;">Global Sale</h2>
-                                <a href="#" class="btn essence-btn">Buy Now</a>
+                                <a href="{% url 'whole_products'%}" class="btn essence-btn">Buy Now</a>
                             </div>
                         </div>
                     </div>
@@ -260,7 +259,7 @@
                             </div>
                             <!-- Product Description -->
                             <div class="product-description">
-                                <span>topshop</span>
+                                {% comment %} <span>topshop</span> {% endcomment %}
                                 <a href="{% url 'single_p_details' item.id  %}">
                                     <h6>{{ item.name }}</h6>
                                 </a>
@@ -288,22 +287,7 @@
         </div>
     </section>
 
-    {% block custom_js %}
     
-    <script>
-        {% for msg in messages %}
-        swal({
-            title: "Success",
-            text: '{{msg}}',
-            icon: "success",
-            button: "Ok!",
-          });
-          {% endfor %}
-
-          
-</script>
-
-{% endblock custom_js %} 
 
     
 
@@ -313,6 +297,20 @@
     <!-- <a href="{% url 'logout' %}"><button class="btn btn-danger">Logout</button></a> -->
 
 </div>
+{% block custom_js %}
 
+<script>
+    {% for msg in messages %}
+    swal({
+        title: "Success",
+        text: '{{msg}}',
+        icon: "success",
+        button: "Ok!",
+      });
+      {% endfor %}
+
+      
+</script>
+{% endblock custom_js %}
 
 {% endblock content %}

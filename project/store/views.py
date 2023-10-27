@@ -31,6 +31,9 @@ from django.http import FileResponse
 from django.views import View
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.cache import never_cache
+from django.views.generic import ListView
 # from PIL import Image
 # from io import BytesIO
 # from django.core.files.base import ContentFile
@@ -79,6 +82,7 @@ def index(request):
     context={"allcategories":allcategories,"allproducts":allproducts}
     return render(request,'index.html',context)
 
+@never_cache
 def home(request):
     if "username" in request.session:
         allcategories=Category.objects.all()
@@ -87,28 +91,133 @@ def home(request):
         return render(request,'home.html',context)
     return redirect("login-page")
      
+def contact(request):
+    return render(request,'contact.html')
+
+def blog(request):
+    return render(request,'blog.html')
+
+# def whole_products(request):
+#     allproducts = Products.objects.all()
+
+#     products_with_offer = []
+
+#     for item in allproducts:
+#         try:
+#             off = Productoffer.objects.get(product=item)
+#             item.offer = off.discount
+#             item.discount_price=round((item.price-((Decimal(off.discount/100))*item.price)),2)
+#               # Assign the discount to the existing object's attribute 
+#         except Productoffer.DoesNotExist:
+#             pass
+
+#         products_with_offer.append(item)
+    
+    
+
+#     context = {"allproducts": products_with_offer}
+
+#     return render(request, 'whole_products.html', context)
+
+########################################################################################################
+# class WholeProductsListView(ListView):
+#     model = Products
+#     template_name = 'whole_products.html'
+#     context_object_name = 'allproducts'
+#     paginate_by = 10  # Set the number of items per page
+
+#     def get_queryset(self):
+#         # Customize your queryset, including calculating discount prices if needed
+#         allproducts = super().get_queryset()
+#         for item in allproducts:
+#             try:
+#                 off = Productoffer.objects.get(product=item)
+#                 item.offer = off.discount
+#                 item.discount_price = round((item.price - ((Decimal(off.discount/100)) * item.price)), 2)
+#             except Productoffer.DoesNotExist:
+#                 pass
+#         return allproducts
+     
+# all_pdt_offer = Productoffer.objects.all()
+########################################################################################################
+
 def whole_products(request):
-    allproducts=Products.objects.all()
-    context={"allproducts":allproducts}
+    allproducts = Products.objects.all()
 
-    return render(request,'whole_products.html',context)
-     
+    # Create a list to store products with calculated discount prices
+    products_with_offer = []
 
-def category_products(request,id):
-     
-     category_s = Category.objects.get(id=id)
-     product_s = Products.objects.filter(category=category_s)
-     context={"category_s":category_s,"product_s":product_s}
-     
-     return render(request,'products.html',context)
+    for item in allproducts:
+        try:
+            off = Productoffer.objects.get(product=item)
+            item.offer = off.discount
+            item.discount_price = round(item.price - ((Decimal(off.discount) / 100) * item.price), 2)
+        except Productoffer.DoesNotExist:
+            pass
 
-# def single_products_details(request, id):
+        products_with_offer.append(item)
+
+    # Create a Paginator object
+    paginator = Paginator(products_with_offer, 10)  # Change 10 to your desired items per page
+
+    page = request.GET.get('page')
+    try:
+        products_with_offer = paginator.page(page)
+    except PageNotAnInteger:
+        products_with_offer = paginator.page(1)
+    except EmptyPage:
+        products_with_offer = paginator.page(paginator.num_pages)
+
+    context = {"allproducts": products_with_offer}
+
+    return render(request, 'whole_products.html', context)
+
+# def category_products(request,id):
+     
+#      category_s = Category.objects.get(id=id)
+#      product_s = Products.objects.filter(category=category_s)
+#      context={"category_s":category_s,"product_s":product_s}
+     
+#      return render(request,'products.html',context) 
+def category_products(request, id):
+    category_s = Category.objects.get(id=id)
+    product_s = Products.objects.filter(category=category_s)
+
+    # Create a Paginator object
+    paginator = Paginator(product_s, 2)  # Change 10 to your desired items per page
+
+    # Get the page number from the request
+    page = request.GET.get('page')
+
+    try:
+        product_s = paginator.page(page)
+    except PageNotAnInteger:
+        # If the page is not an integer, default to the first page
+        product_s = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range, deliver the last page
+        product_s = paginator.page(paginator.num_pages)
+
+    context = {"category_s": category_s, "product_s": product_s}
+     
+    return render(request, 'products.html', context)
+
+# def single_products_details(request, id): 
 #     product = get_object_or_404(ZoomProduct, id=id)
 #     return render(request, 'single-product-details.html', {'product': product})
 
 def single_products_details(request,id):
     product = Products.objects.filter(id = id).first()
-    context = {'product':product}
+    product_list=[product]
+    req_pdt=product_list[0]
+    try:
+        off=Productoffer.objects.get(product=req_pdt)
+        req_pdt.offer=off.discount
+        req_pdt.discount_price=round((req_pdt.price-((Decimal(off.discount/100))*req_pdt.price)),2)
+    except:
+        pass
+
+    context = {'product':req_pdt}
     return render(request,'single-product-details.html',context)
 
 def quantity_update(request):
@@ -165,6 +274,29 @@ def add_to_cart(request):
         return redirect('home')  # Redirect to the home page or handle this as needed
 
     
+# def view_cart(request):
+#     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+#         userobj = Customers.objects.get(username=request.session["username"])
+#         cartobjs = Cart.objects.filter(user=userobj)
+
+#         # Calculate the total for each cart item
+#         for item in cartobjs:
+#             item.total = item.quantity * item.product.price
+
+#         totalsum = sum(item.total for item in cartobjs)
+#         no_of_cart_items = cartobjs.count()
+#         wishlistobjs = Wishlist.objects.filter(user=userobj)
+#         no_of_wishlist_items = wishlistobjs.count()
+
+#         return render(request, "cart.html", {
+#             "cartobjs": cartobjs,
+#             "totalsum": totalsum,
+#             "no_of_cart_items": no_of_cart_items,
+#             "no_of_wishlist_items": no_of_wishlist_items
+#         })
+#     else:
+#         return redirect('login-page')
+@never_cache
 def view_cart(request):
     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
         userobj = Customers.objects.get(username=request.session["username"])
@@ -179,6 +311,17 @@ def view_cart(request):
         wishlistobjs = Wishlist.objects.filter(user=userobj)
         no_of_wishlist_items = wishlistobjs.count()
 
+        page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+        per_page = 2  # You can change this to your desired number of items per page
+
+        paginator = Paginator(cartobjs, per_page)
+        try:
+            cartobjs = paginator.page(page)
+        except PageNotAnInteger:
+            cartobjs = paginator.page(1)
+        except EmptyPage:
+            cartobjs = paginator.page(paginator.num_pages)
+
         return render(request, "cart.html", {
             "cartobjs": cartobjs,
             "totalsum": totalsum,
@@ -187,7 +330,6 @@ def view_cart(request):
         })
     else:
         return redirect('login-page')
-
 
 def delete_cart_item(request):
     if request.method == 'POST':
@@ -236,14 +378,35 @@ def add_to_wishlist(request):
     else:
         return redirect('home')  # Redirect to the home page or handle this as needed
     
+# def view_wishlist(request):
+#     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
+#         userobj = Customers.objects.get(username=request.session["username"])
+#         wishlistobjs = Wishlist.objects.filter(user=userobj)
+
+#         return render(request, "wishlist.html", {
+#             "wishlistobjs": wishlistobjs,
+#         })
+#     else:
+#         return redirect('login-page')
+
+@never_cache
 def view_wishlist(request):
     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
         userobj = Customers.objects.get(username=request.session["username"])
         wishlistobjs = Wishlist.objects.filter(user=userobj)
 
-        return render(request, "wishlist.html", {
-            "wishlistobjs": wishlistobjs,
-        })
+        page = request.GET.get('page')  # Get the current page number from the request's GET parameters
+        per_page = 10  # You can change this to your desired number of items per page
+
+        paginator = Paginator(wishlistobjs, per_page)
+        try:
+            wishlistobjs = paginator.page(page)
+        except PageNotAnInteger:
+            wishlistobjs = paginator.page(1)
+        except EmptyPage:
+            wishlistobjs = paginator.page(paginator.num_pages)
+
+        return render(request, "wishlist.html", {"wishlistobjs": wishlistobjs})
     else:
         return redirect('login-page')
 
@@ -266,7 +429,7 @@ def delete_wishlist_item(request):
     return redirect('wishlist')  # Redirect to the cart page or any other page
 
 
-    
+@never_cache   
 def userprofile(request):
     username = request.session["username"]
     customerobj = Customers.objects.get(username=username)
@@ -303,7 +466,7 @@ def userprofile(request):
     }
     return render(request, "userprofile.html", context)
 
-
+@never_cache
 def edituserdetails(request,user_id):
      # Check if the user has permission to edit the details (you can customize this part)
     # if request.user.id != user_id:
@@ -326,6 +489,31 @@ def edituserdetails(request,user_id):
     return render(request, 'edituserdetails.html', {'customerobj': customerobj})
 
 ##############################error#################################
+@never_cache
+# def Add_address(request):
+#     if request.method == "POST":
+#         house = request.POST.get("house")
+#         locality = request.POST.get("locality")
+#         district = request.POST.get("district")
+#         state = request.POST.get("state")
+#         country = request.POST.get("country")
+#         pincode = request.POST.get("pincode")
+#         customer = Customers.objects.get(username=request.session["username"])
+
+#         new_address = Address.objects.create(
+#             house=house,
+#             locality=locality,
+#             district=district,
+#             state=state,
+#             country=country,
+#             pincode=pincode,
+#             customer=customer 
+#         )
+
+#         return redirect('checkout')
+
+#     return render(request, 'add_address.html')
+
 def Add_address(request):
     if request.method == "POST":
         house = request.POST.get("house")
@@ -334,8 +522,18 @@ def Add_address(request):
         state = request.POST.get("state")
         country = request.POST.get("country")
         pincode = request.POST.get("pincode")
-        customer = Customers.objects.get(username=request.session["username"])
 
+        # Validate the form data
+        if not house or not locality or not district or not state or not country or not pincode:
+            error_message = "All fields are required."
+            return render(request, 'add_address.html', {'error_message': error_message})
+
+        if not pincode.isdigit() or len(pincode) != 6:
+            error_message = "Invalid pincode. It should be a 6-digit number."
+            return render(request, 'add_address.html', {'error_message': error_message})
+
+        # All data is valid, so proceed to create the address
+        customer = Customers.objects.get(username=request.session["username"])
         new_address = Address.objects.create(
             house=house,
             locality=locality,
@@ -349,8 +547,9 @@ def Add_address(request):
         return redirect('checkout')
 
     return render(request, 'add_address.html')
-##############################error#################################
 
+##############################error#################################
+@never_cache
 def Edit_address(request,myid):
     
     addressobjs = Address.objects.get(id=myid)
@@ -387,6 +586,7 @@ def Edit_address(request,myid):
     
 from django.shortcuts import render
 
+@never_cache
 def checkout(request):
     # Get the user's username and retrieve customer and address information
     username = request.session.get("username")
@@ -536,7 +736,7 @@ def applycouponajax(request):
         return JsonResponse({"amount":discounted_amount,"message_success":message_success})
     
 
-
+@never_cache
 def place_order(request):
 
     if request.method=="POST":
@@ -723,7 +923,7 @@ def razorpay_success(request):
 
     return render(request,'razorpay_success.html',context)
 
-
+@never_cache
 def order_details(request,myid):
 
 
@@ -749,6 +949,7 @@ def delete_order(request,myid):
 
     return redirect('userprofile')
 
+@never_cache
 def delivered_product(request):
     username = request.session['username']
     userobj = Customers.objects.get(username = username)
@@ -776,7 +977,7 @@ def delivered_product(request):
 
     return render(request,"deliveredproduct.html",context)
 
-
+@never_cache
 def delivered_pdt_return(request,myid):
     order_details = Orders_details.objects.get(id = myid)
 
@@ -803,6 +1004,8 @@ def Register(request):
         phonenumber=request.POST.get("phonenumber")
         password=request.POST.get("password")
         repassword=request.POST.get("repassword")
+
+        # if(username=="" or )
         
 
         already_presentuser = None
@@ -942,10 +1145,19 @@ def Login(request):
     
 
      
-    
 def logoutuser(request):
-    logout(request)
-    return redirect ('index')
+    if 'username' in request.session:
+        request.session.flush()
+    return redirect('login')
+
+# def logoutuser(request):
+#     logout(request)
+#     request.session.flush()  # Flush the session
+#     return redirect('index')
+
+# if 'username' in request.session:
+#         request.session.flush()
+#     return redirect('login')
 
 def generate_otp():
     return str(random.randint(1000, 9999))

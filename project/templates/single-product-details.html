@@ -125,7 +125,20 @@
         <a href="cart.html">
             <h2>{{product.name}}</h2>
         </a>
-        <p class="product-price"><span class="old-price">Rs 6500.00</span>Rs{{ product.price}}</p>
+
+        {% if product.discount_price %}
+        <p class="product-price"><span class="old-price">$ {{product.price}}</span> ${{product.discount_price}}</p>
+        {% else %}
+        <p class="product-price"> ${{product.price}}</p>
+
+
+        
+        {% endif %}
+        
+
+
+
+        {% comment %} <p class="product-price"><span class="old-price">Rs 6500.00</span>Rs{{ product.price}}</p> {% endcomment %}
         <p class="product-desc">{{product.description}}</p>
        
         <!-- Form -->

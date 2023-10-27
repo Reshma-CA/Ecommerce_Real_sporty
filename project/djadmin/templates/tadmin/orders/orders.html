@@ -11,6 +11,35 @@ Admin Dashboard
 
 <!-- BLOCK FOR CUSTOM CSS -->
 {% block custom_css %}
+<style>
+  .pagination {
+    margin-left:400px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination .pagination-link {
+    margin: 5px;
+    padding: 5px 10px;
+    background-color: #3498db;
+    color: #fff;
+    border: 1px solid #3498db;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block; /* Align links horizontally */
+}
+
+.pagination .pagination-link:hover {
+    background-color: #2980b9;
+}
+
+.current-page {
+    margin: 5px;
+    display: inline-block; /* Align the current page text horizontally */
+}
+
+</style>
+
 {% endblock custom_css %}
 
 <!--END BLOCK FOR CUSTOM CSS -->
@@ -89,7 +118,25 @@ Order Section
   
   
   </div>
-        
+  <div class="pagination">
+    <span class="step-links">
+        {% if orderobjs.has_previous %}
+            <a class="pagination-link" href="?page=1">&laquo; first</a>
+            <a class="pagination-link" href="?page={{ orderobjs.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ orderobjs.number }} of {{ orderobjs.paginator.num_pages }}.
+        </span>
+
+        {% if orderobjs.has_next %}
+            <a class="pagination-link" href="?page={{ orderobjs.next_page_number }}">next</a>
+            <a class="pagination-link" href="?page={{ orderobjs.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
   
   
 

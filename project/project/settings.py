@@ -150,3 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 RAZORPAY_API_KEY = 'rzp_test_6rUfbHgKyv2H5b'
 
 RAZORPAY_API_SECRET = 'VN9zdzFvwcmhR2g3FUyOvF3b'
+
+# RAZORPAY_API_KEY ="rzp_test_nh5fggxaOrm0X4"
+
+# RAZORPAY_API_SECRET = "iJMtpdU3QquCIcl0h6jie5D1"

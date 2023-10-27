@@ -1,11 +1,15 @@
 from django.urls import path
 from .import views
 from .views import GenerateInvoice
+# from .views import WholeProductsListView
 
 urlpatterns = [
     path("",views.index,name="index"),
     path("signup/",views.Register,name = "signup"),
     path("home/",views.home,name = "home"),
+    path("contact/",views.contact,name = "contact"),
+    path("blog/",views.blog,name = "blog"),
+    # path('whole_products/', WholeProductsListView.as_view(), name='whole_products'),
     path('whole_products/', views.whole_products, name='whole_products'),
     path('category_products/<int:id>', views.category_products, name='category_products'), 
     path('single_p_details/<int:id>',views.single_products_details,name = 'single_p_details'),

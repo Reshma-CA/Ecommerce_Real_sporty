@@ -83,6 +83,22 @@
     margin: 5px 0;
 }
 
+/* Define styles for the button */
+.generate-invoice-button {
+    background-color: #007BFF;
+    color: #FFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    }
+
+/* Hover effect for the button */
+.generate-invoice-button:hover {
+    background-color: #0056b3;
+    }
+
     
     
 </style>
@@ -96,7 +112,7 @@
         <!-- Classy Menu -->
         <nav class="classy-navbar" id="essenceNav">
             <!-- Logo -->
-            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <a class="nav-brand" href="{% url 'home'%}"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
             <!-- Navbar Toggler -->
             <div class="classy-navbar-toggler">
                 <span class="navbarToggler"><span></span><span></span><span></span></span>
@@ -110,43 +126,26 @@
                 <!-- Nav Start -->
                 <div class="classynav">
                     <ul>
-                      <li><a href="#">Home</a>
-                        
-                    </li>
-                      <!-- #################################################### -->
-                        <li><a href="#">Shop</a>
-                            <div class="megamenu">
-                                <ul class="single-mega cn-col-4">
-                                    <li class="title">Collections </li>
-                                    <li><a href="shop.html">Badminton Racket &amp; Cock </a></li>
-                                    <li><a href="shop.html">Cricket Bat &amp; Ball</a></li>
-                                    <li><a href="shop.html">Football</a></li>
-                                    
-                                </ul>
-                              
-                                <div class="single-mega cn-col-4">
-                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
-                                </div>
-                            </div>
+                        <li><a href="{% url 'whole_products' %}">Shop</a>
+                            
                         </li>
-                        <!-- ############################################### -->
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
-                                <li><a href="index.html">Home</a></li>
-                                <li><a href="shop.html">Shop</a></li>
-                                <li><a href="single-product-details.html">Product Details</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="blog.html">Blog</a></li>
-                                <li><a href="single-blog.html">Single Blog</a></li>
-                                <li><a href="regular-page.html">Regular Page</a></li>
-                                <li><a href="contact.html">Contact</a></li>
+                                <li><a href="{% url 'home'%}">Home</a></li>
+                                <li><a href="{% url 'whole_products'%}">Shop</a></li>
+                                
+                                <li><a href="{% url 'blog'%}">Blog</a></li>
+                                
+                                <li><a href="{% url 'contact'%}">Contact</a></li>
                             </ul>
                         </li>
                         
-                        <li><a href="contact.html">Contact</a></li>
-                        
+                        <li><a href="{% url 'contact'%}">Contact</a></li>
+                        {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
+                        <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
                     </ul>
                 </div>
+
                 <!-- Nav End -->
             </div>
         </nav>
@@ -154,12 +153,12 @@
         <!-- Header Meta Data -->
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
-            <div class="search-area">
+            {% comment %} <div class="search-area">
                 <form action="#" method="post">
                     <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-            </div>
+            </div> {% endcomment %}
             <!-- Favourite Area -->
             <div class="favourite-area">
                 <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
@@ -170,7 +169,7 @@
             </div>
             <!-- Cart Area -->
             <div class="cart-area">
-                <a href="{% url 'cart' %}" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+                <a href="{% url 'cart' %}" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>{{ no_of_cart_items }}</span></a>
             </div>
 
             <div class="user-login-info">
@@ -217,6 +216,10 @@
                         <p><strong>Product Price:</strong> Rs. {{ finalprice }}</p>
                     </div>
                     <hr>
+                    <form method="get" action="#">
+                        <button type="submit" name="invoice" class="generate-invoice-button">Generate Invoice</button>
+                    </form>
+
                     {% endfor %}
                 </div>
             </div>

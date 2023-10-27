@@ -28,7 +28,38 @@ Dashboard
 <!-- BLOCK FOR PAGE MAIN CONTENT  -->
 
 {% block page_content %}
-<P>Simple Dashboard Empty Page</P>
+
+<h1>Sales Report</h1>
+
+
+<div class="row">
+  <div class="col-md-6">
+      <div class="card">
+          <div class="card-body">
+              <h4 class="card-title">Top Product with Most number Of Orders</h4>
+              <p class="card-text text-success font-weight-bold">{{ top_product }}</p>
+          </div>
+          <div class="card-body">
+              <h4 class="card-title">Order Chart</h4>
+              <canvas id="myChart" width="400" height="400"></canvas>
+          </div>
+      </div>
+  </div>
+
+  <div class="col-md-6">
+      <div class="card">
+          <div class="card-body">
+              <h4 class="card-title">Most Utilized Payment Method</h4>
+              <p class="card-text text-success font-weight-bold">{{ top_returned_product }}</p>
+          </div>
+          <div class="card-body">
+              <h4 class="card-title">Payment Method Chart</h4>
+              <canvas id="mybarChart" width="400" height="400"></canvas>
+          </div>
+      </div>
+  </div>
+</div>
+
             
 {% endblock page_content %}
 
@@ -37,6 +68,67 @@ Dashboard
 <!-- BLOCK FOR CUSTOM JS -->
 
 {% block custom_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+   
+             <script>
+                var xValues = [{% for item in payment  %} '{{item}}',  {% endfor %}];
+                var yValues = [20,30];
+                var yValues = [ {% for key, value in payment.items %}
+                              {{ value }},
+                                {% endfor %}
+                                ]; 
+                var barColors = ["pink", "lightgreen","red","orange","brown"];
+                
+                new Chart("mybarChart", {
+                  type: "bar",
+                  data: {
+                    labels: xValues,
+                    datasets: [{
+                      backgroundColor: barColors,
+                      data: yValues
+                    }]
+                  },
+                  options: {
+                    legend: {display: false},
+                    title: {
+                      display: true,
+                      text: "World Wine Production 2018"
+                    }
+                  }
+                });
+                </script>  
+
+
+
+              
+            <script>
+                  const ctx = document.getElementById('myChart');
+                
+                  new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                      labels: [{% for item in orders  %} '{{item}}',  {% endfor %}],
+                      datasets: [{
+                        //label: '{{top_count}}  Sales for {{top_product}}',
+                        data: [{% for key,value in orders.items  %} {{value}},  {% endfor %}],
+                        borderWidth: 1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                </script> 
+                
+                
+      
+
 {% endblock custom_js %}
 
   <!-- END BLOCK FOR CUSTOM JS -->
