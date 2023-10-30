@@ -45,6 +45,9 @@ from django.db.models import Sum
 import matplotlib.pyplot as plt
 import io
 import urllib, base64
+from datetime import timedelta, datetime, time
+
+from django.http import JsonResponse
 # import xlsxwriter
 
 # Create your views here.
@@ -53,27 +56,47 @@ import urllib, base64
 
 @never_cache
 def adminilogin(request):
-     orderobjs=Orders_details.objects.all()
+    if 'ausername' in request.session:
+        # Get all order objects
+        orderobjs = Orders_details.objects.all()
 
-     if 'ausername' in request.session:
-        payment={}
+        # Calculate payment and orders
+        payment = {}
+        orders = {}
+        
         for item in orderobjs:
             if item.ordertype not in payment:
-                payment[item.ordertype]=1
+                payment[item.ordertype] = 1
             else:
-                payment[item.ordertype]+=1
-        print(payment)
-
-        orders={}
-        for item in orderobjs:
+                payment[item.ordertype] += 1
+            
             if item.product.name not in orders:
-                orders[item.product.name]=1
+                orders[item.product.name] = 1
             else:
-                orders[item.product.name]+=1
-          
-        return render(request,'tadmin/adminhome.html',{"payment":payment,"orders":orders})  
-     
-     if request.method=='POST':
+                orders[item.product.name] += 1
+
+        # Get order data for the last 7 days
+        today = timezone.now()
+        seven_days_ago = today - timedelta(days=6)
+        
+        orders_by_day = Orders_details.objects.filter(
+            orderdate__range=(seven_days_ago, today)
+        ).values('orderdate__day').annotate(order_count=Count('id'))
+        
+        # Initialize an order_data list with zeros for all days of the week
+        order_data = [0] * 7
+
+        # Populate the order_data list with the counts
+        for order in orders_by_day:
+            day = (order['orderdate__day'] + 6) % 7  # Adjust for array indexing
+            order_data[day] = order['order_count']
+
+        return render(request, 'tadmin/adminhome.html', {
+            "payment": payment,
+            "orders": orders,
+            "order_data": order_data,
+        })
+    if request.method=='POST':
         uname=request.POST.get("username")
         pword=request.POST.get("password")
         
@@ -105,7 +128,7 @@ def adminilogin(request):
             
             messages.error(request,"Error in login! Invalid Login details!")
             return render(request,"adminlogin.html")
-     return render(request,'adminlogin.html')
+    return render(request,'adminlogin.html')
 
 
 
@@ -443,6 +466,7 @@ def orders(request):
 
 def edit_order_status(request,myid):
     details = Orders_details.objects.get(id=myid)
+    
     if request.method=="POST":
         orderstatus=request.POST.get("orderstatus")
         details.orderstatus=orderstatus
@@ -453,7 +477,10 @@ def edit_order_status(request,myid):
     context = {
         'orderobjs':details
     }
-    return render(request,'tadmin/orders/edit_order_ststus.html',context)
+
+    print('88888888888',details,'order object *************************************')
+
+    return render(request,'tadmin/orders/edit_order_ststus.html', context)
 
 
 @never_cache

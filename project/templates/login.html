@@ -45,7 +45,25 @@
 							
 	
 						</form>
+						 {% comment %} <div class="text-center mt-3">
+							<p class="mb-2" style="font-size: 18px; color: #555;">Don't have an account?</p>
+							<a href="{% url 'signup' %}" class="btn btn-primary btn-lg" style="border-radius: 15px;">
+								<i class="fas fa-user-plus" style="margin-right: 8px;"></i> Register
+							</a>
+						</div>  {% endcomment %}
+						<div class="row mt-3">
+							<div class="col-12 text-center">
+								<p class="mb-2" style="font-size: 18px; color: #555;">Don't have an account?</p>
+								<a href="{% url 'signup' %}" class="btn btn-primary btn-sm rounded-pill" style="border-width: 2px;">
+									<i class="" style="margin-right: 8px;"></i> Register
+								</a>
+							</div>
+						</div>
+						
+						
 					</div>
+					
+					
 				</div>
 			</div>
 		</div>

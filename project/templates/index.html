@@ -10,7 +10,7 @@
         <!-- Classy Menu -->
         <nav class="classy-navbar" id="essenceNav">
             <!-- Logo -->
-            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <a class="nav-brand" href="#"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
             <!-- Navbar Toggler -->
             <div class="classy-navbar-toggler">
                 <span class="navbarToggler"><span></span><span></span><span></span></span>
@@ -24,39 +24,26 @@
                 <!-- Nav Start -->
                 <div class="classynav">
                     <ul>
-                        <li><a href="#">Shop</a>
-                            <div class="megamenu">
-                                {% for item in allcategories %}
-                                <ul class="single-mega cn-col-4">
-                                    <li class="title">Collections </li>
-                                    <li><a href="{% url 'category_products' item.id  %}">{{ item.name }} </a></li>
-                                    
-                                    
-                                </ul> 
-                                {% endfor %}
-                                <div class="single-mega cn-col-4">
-                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
-                                </div>
-                            </div>
+                        <li><a href="{% url 'whole_products' %}">Shop</a>
+                            
                         </li>
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
-                                <li><a href="index.html">Home</a></li>
-                                <li><a href="shop.html">Shop</a></li>
-                                <li><a href="single-product-details.html">Product Details</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="blog.html">Blog</a></li>
-                                <li><a href="single-blog.html">Single Blog</a></li>
-                                <li><a href="regular-page.html">Regular Page</a></li>
-                                <li><a href="contact.html">Contact</a></li>
+                                <li><a href="{% url 'home'%}">Home</a></li>
+                                <li><a href="{% url 'whole_products'%}">Shop</a></li>
+                                
+                                <li><a href="{% url 'blog'%}">Blog</a></li>
+                                
+                                <li><a href="{% url 'contact'%}">Contact</a></li>
                             </ul>
                         </li>
                         
-                        <li><a href="contact.html">Contact</a></li>
-                        <li><a href="{% url 'signup'%}" class='no-message'>Sign up</a></li>
-                        <li><a href="{% url 'login-page'%}" class='no-message'>login</a></li>
+                        <li><a href="{% url 'contact'%}">Contact</a></li>
+                         <li><a href="{% url 'signup'%}">Sign up</a></li>
+                        <li><a href="{% url 'login-page'%}">login</a></li> 
                     </ul>
                 </div>
+
                 <!-- Nav End -->
             </div>
         </nav>
@@ -64,24 +51,29 @@
         <!-- Header Meta Data -->
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
-            <div class="search-area">
+            {% comment %} <div class="search-area">
                 <form action="#" method="post">
                     <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-            </div>
+            </div> {% endcomment %}
             <!-- Favourite Area -->
             <div class="favourite-area">
-                <a href="#"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
+                <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
             </div>
             <!-- User Login Info -->
-            <!-- <div class="user-login-info">
-                <a href="#"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
-            </div> -->
+            {% comment %} <div class="user-login-info">
+                <a href="{% url 'userprofile'%}"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
+            </div> {% endcomment %}
             <!-- Cart Area -->
             <div class="cart-area">
-                <a href="#" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+                <a href="{% url 'cart' %}" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>{{ no_of_cart_items }}</span></a>
             </div>
+
+            {% comment %} <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div> {% endcomment %}
         </div>
 
     </div>
@@ -111,7 +103,7 @@
                             <h6>asoss</h6>
                             <h2 style="color: red;">New Collection</h2>
 
-                            <a href="#" class="btn essence-btn">view collection</a>
+                            <a href="{% url 'whole_products'%}" class="btn essence-btn">view collection</a>
                         </div>
                     </div>
                 </div>
@@ -127,7 +119,7 @@
                         <div class="hero-content">
                             <h6>asoss</h6>
                             <h2 style ="color:red;">New Collection</h2>
-                            <a href="#" class="btn essence-btn">view collection</a>
+                            <a href="{% url 'whole_products'%}" class="btn essence-btn">view collection</a>
                         </div>
                     </div>
                 </div>
@@ -143,7 +135,7 @@
                         <div class="hero-content">
                             <h6>asoss</h6>
                             <h2 style ="color:red;"> New Collection</h2>
-                            <a href="#" class="btn essence-btn">view collection</a>
+                            <a href="{% url 'whole_products'%}" class="btn essence-btn">view collection</a>
                         </div>
                     </div>
                 </div>
@@ -198,7 +190,7 @@
                             <div class="cta--text">
                                 <h6 style="color:green;">-60%</h6>
                                 <h2 style="color:red;">Global Sale</h2>
-                                <a href="#" class="btn essence-btn">Buy Now</a>
+                                <a href="{% url 'whole_products'%}" class="btn essence-btn">Buy Now</a>
                             </div>
                         </div>
                     </div>
@@ -227,37 +219,65 @@
                 <div class="col-12">
                     <div class="popular-products-slides owl-carousel">
 
+                        
                         <!-- Single Product -->
-                        {% for item in allproducts  %}
-                        <div class="single-product-wrapper">
+                        {% for item in allproducts %}
+
+                       <div class="single-product-wrapper">
+                        <form method="POST" action="{% url 'add_to_wishlist' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ item.id }}">
+                            <button type="submit" class="love-button" style="border: none; background: none;">
+                                <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
+                            </button>
+                        </form>
+                         
+                            {% comment %} <a href=="{% url 'add_to_wishlist' item.id  %}" class="love-button" style="border: none; padding: 0;">
+                                <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
+                            </a> {% endcomment %}
+
+                            {% comment %} <a href="#" class="love-button" style="border: none; padding: 0;">
+                                    <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
+                                </a> {% endcomment %}
+                            
                             <!-- Product Image -->
                             <div class="product-img">
-                                <img style="width:200px;height:300px;" src={{item.image1.url}} alt="">
+                                <!-- Form for adding to wishlist -->
+                                {% comment %} <form method="POST" action="{% url 'add_to_wishlist'  %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                    <button type="submit" class="btn essence-btn">Add to Wishlist </button>
+                                    <a href="#" class="love-button" style="border: none; padding: 0;">
+                                        <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
+                                    </a>
+                                </form> {% endcomment %}
+
+                                <img style="width: 200px; height: 300px;" src="{{ item.image1.url }}" alt="">
                                 <!-- Hover Thumb -->
-                                <img style="width:200px;height:300px;" class="hover-img" src={{item.image3.url}} alt="">
-                                <!-- Favourite -->
-                                <div class="product-favourite">
-                                    <a href="#" class="favme fa fa-heart"></a>
-                                </div>
+                                <img style="width: 200px; height: 300px;" class="hover-img" src="{{ item.image3.url }}" alt="">
                             </div>
                             <!-- Product Description -->
                             <div class="product-description">
-                                <span>topshop</span>
-                                <a href="single-product-details.html">
-                                    <h6>{{item.name}}</h6>
+                                {% comment %} <span>topshop</span> {% endcomment %}
+                                <a href="{% url 'single_p_details' item.id  %}">
+                                    <h6>{{ item.name }}</h6>
                                 </a>
-                                <p class="product-price">{{item.price}}</p>
+                                <p class="product-price">Rs. {{ item.price }}/-</p>
+
+                               
 
                                 <!-- Hover Content -->
                                 <div class="hover-content">
                                     <!-- Add to Cart -->
-                                    <div class="add-to-cart-btn">
-                                        <a href="#" class="btn essence-btn">Add to Cart</a>
-                                    </div>
+                                    <form method="post" action="{% url 'add_to_cart' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ item.id }}">
+                                        <button type="submit" class="btn essence-btn">Add to Cart</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
+                    {% endfor %}
 
                        
                     </div>
@@ -265,34 +285,7 @@
             </div>
         </div>
     </section>
-<!-- ##### Brands Area Start ##### -->
-{% comment %} <div class="brands-area d-flex align-items-center justify-content-between">
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand1.png'%}" alt="">
-    </div>
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand2.png'%}" alt="">
-    </div>
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand3.png'%}" alt="">
-    </div>
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand4.png'%}" alt="">
-    </div>
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand5.png'%}" alt="">
-    </div>
-    <!-- Brand Logo -->
-    <div class="single-brands-logo">
-        <img src="{% static '/img/core-img/brand6.png'%}" alt="">
-    </div>
-</div> {% endcomment %}
-<!-- ##### Brands Area End ##### -->
+
 
 
 

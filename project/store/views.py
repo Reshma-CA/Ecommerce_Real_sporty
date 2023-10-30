@@ -158,7 +158,7 @@ def whole_products(request):
         products_with_offer.append(item)
 
     # Create a Paginator object
-    paginator = Paginator(products_with_offer, 10)  # Change 10 to your desired items per page
+    paginator = Paginator(products_with_offer, 3)  # Change 10 to your desired items per page
 
     page = request.GET.get('page')
     try:
@@ -210,6 +210,9 @@ def single_products_details(request,id):
     product = Products.objects.filter(id = id).first()
     product_list=[product]
     req_pdt=product_list[0]
+    stock=Products.objects.get(id=id)
+    qu=stock.quantity
+    print(qu)
     try:
         off=Productoffer.objects.get(product=req_pdt)
         req_pdt.offer=off.discount
@@ -217,28 +220,35 @@ def single_products_details(request,id):
     except:
         pass
 
-    context = {'product':req_pdt}
+    context = {'product':req_pdt,"qu":qu}
     return render(request,'single-product-details.html',context)
 
 def quantity_update(request):
     itemid=request.GET["itemid"]
-    quantity=request.GET["quantity"]
+    quantity=int(request.GET["quantity"])
     cartobj=Cart.objects.get(id=itemid)
-    product=cartobj.product
-    cartobj.quantity=quantity
-    sum=Decimal(quantity)*product.price
-    cartobj.total=sum
-    
-    cartobj.save()
-    username=request.session["username"]
-    userobj=Customers.objects.get(username=username)
-    cartobjs=Cart.objects.filter(user=userobj)
-    subtotal=0
-    for item in cartobjs:
-        subtotal+=item.total
-    
-    
-    return JsonResponse({"sum":sum,"subtotal":subtotal})
+    p=Products.objects.get(id=cartobj.product.id)
+    q=p.quantity
+    print(q)
+    if quantity > q:
+      return JsonResponse({"msg": "The available stock won't suffice for the requested quantity."})
+
+    else:
+        product=cartobj.product
+        cartobj.quantity=quantity
+        sum=Decimal(quantity)*product.price
+        cartobj.total=sum
+        
+        cartobj.save()
+        username=request.session["username"]
+        userobj=Customers.objects.get(username=username)
+        cartobjs=Cart.objects.filter(user=userobj)
+        subtotal=0
+        for item in cartobjs:
+            subtotal+=item.total
+        
+        
+        return JsonResponse({"sum":sum,"subtotal":subtotal})
 
 def add_to_cart(request):
     if request.method == 'POST':
@@ -468,10 +478,7 @@ def userprofile(request):
 
 @never_cache
 def edituserdetails(request,user_id):
-     # Check if the user has permission to edit the details (you can customize this part)
-    # if request.user.id != user_id:
-    #     return HttpResponse("You don't have permission to edit this user's details")
-
+    
     if request.method == "POST":
         name = request.POST["name"]
         email = request.POST["email"]
@@ -487,6 +494,12 @@ def edituserdetails(request,user_id):
 
     customerobj = Customers.objects.get(id=user_id)
     return render(request, 'edituserdetails.html', {'customerobj': customerobj})
+
+
+ # Check if the user has permission to edit the details (you can customize this part)
+    # if request.user.id != user_id:
+    #     return HttpResponse("You don't have permission to edit this user's details")
+
 
 ##############################error#################################
 @never_cache
@@ -795,6 +808,7 @@ def place_order(request):
                 print(request.session["applied_coupon_amd"],)
                 total_price = int(request.session["applied_coupon_amd"])*100
             razorpay_order = razorpay_client.order.create({'amount':total_price , 'currency': 'INR'})
+            
 
 
                
@@ -897,6 +911,9 @@ def razorpay_success(request):
     username = request.session["username"]
     customer = Customers.objects.get(username=username)
     cartobj = Cart.objects.filter(user=customer)
+
+    # address_house=request.POST.get("address")
+    # addressobj=Address.objects.get(id=address_house)
     
 
     
@@ -915,6 +932,7 @@ def razorpay_success(request):
             'cartobj': cartobj,
             'finalprice': finalprice,
             "date":datevalue,
+            # 'addressobj': addressobj
             
           
         }
@@ -1094,7 +1112,7 @@ def Register(request):
         
       return render(request,"signup.html")
       
-
+@never_cache
 def Login(request):
     try:
         if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
@@ -1102,8 +1120,10 @@ def Login(request):
     except:
         pass
     if request.method=="POST":
-            username=request.POST.get("username")
-            password=request.POST.get("password")
+            username=request.POST.get("username",None)
+            password=request.POST.get("password",None)
+            
+
             if len(username)<4:
                 error="Username should contain minimum four characters"
 
@@ -1199,6 +1219,7 @@ def send_otp(phonenumber, otp):
 
         print(response.text)
 
+@never_cache
 def otp_verify(request):
     msg1="OTP sent. "
     msg2="Please enter the OTP received in your phone below."
@@ -1228,7 +1249,7 @@ def otp_verify(request):
 
 
     
-
+@never_cache
 def resend_otp(request):
     msg1="OTP sent. "
     msg2="Please enter the OTP received in your phone below."
@@ -1284,7 +1305,7 @@ def forg_pass(request):
         
     return render(request, "forgot_pass.html")
     
-
+@never_cache
 def forg_verify_otp(request):
    
 
@@ -1311,6 +1332,7 @@ def forg_verify_otp(request):
 
     return render(request, "forgot_verify.html")
 
+@never_cache
 def forg_reset_password(request):
     if request.method == "POST":
         phonenumber = request.POST.get("phonenumber")
@@ -1340,6 +1362,10 @@ def forg_reset_password(request):
 
     return render(request, "forgot_reset_pass.html")
 
+from django.http import Http404
+
+def custom_404_test(request):
+    raise Http404("This is a custom 404 page test.")
 
 
     

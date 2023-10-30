@@ -107,7 +107,15 @@
             
 
 					</form>
-
+					{% comment %} <p class="text-center mt-3">Already have an account? <a href="{% url 'login-page' %}">Login</a></p> {% endcomment %}
+					<div class="row mt-3">
+						<div class="col-12 text-center">
+							<p class="mb-2" style="font-size: 18px; color: #555;">Already have an account?</p>
+							<a href="{% url 'login-page' %}" class="btn btn-primary btn-sm rounded-pill" style="border-width: 2px;">
+								<i class="" style="margin-right: 8px;"></i> Login
+							</a>
+						</div>
+					</div>
 					{{msg}}
 				</div>
 			</div>

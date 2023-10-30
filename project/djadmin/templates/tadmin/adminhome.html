@@ -42,6 +42,7 @@ Dashboard
           <div class="card-body">
               <h4 class="card-title">Order Chart</h4>
               <canvas id="myChart" width="400" height="400"></canvas>
+              
           </div>
       </div>
   </div>
@@ -58,6 +59,13 @@ Dashboard
           </div>
       </div>
   </div>
+
+  <div style="width: 80%;">
+    <canvas id="orderChart"></canvas>
+</div>
+<textarea id="my-data" style="display: none;">{{ order_data|escapejs }}</textarea>
+
+
 </div>
 
             
@@ -71,62 +79,114 @@ Dashboard
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+ 
+
    
-             <script>
-                var xValues = [{% for item in payment  %} '{{item}}',  {% endfor %}];
-                var yValues = [20,30];
-                var yValues = [ {% for key, value in payment.items %}
-                              {{ value }},
-                                {% endfor %}
-                                ]; 
-                var barColors = ["pink", "lightgreen","red","orange","brown"];
-                
-                new Chart("mybarChart", {
-                  type: "bar",
-                  data: {
-                    labels: xValues,
-                    datasets: [{
-                      backgroundColor: barColors,
-                      data: yValues
-                    }]
-                  },
-                  options: {
-                    legend: {display: false},
-                    title: {
-                      display: true,
-                      text: "World Wine Production 2018"
-                    }
-                  }
-                });
-                </script>  
-
-
-
-              
-            <script>
-                  const ctx = document.getElementById('myChart');
-                
-                  new Chart(ctx, {
-                    type: 'pie',
+                <script>
+                  
+                  var xValues = [{% for item in payment  %} '{{item}}',  {% endfor %}];
+                  var yValues = [20,30];
+                  var yValues = [ {% for key, value in payment.items %}
+                                {{ value }},
+                                  {% endfor %}
+                                  ]; 
+                  var barColors = ["pink", "lightgreen","red","orange","brown"];
+                  
+                  new Chart("mybarChart", {
+                    type: "bar",
                     data: {
-                      labels: [{% for item in orders  %} '{{item}}',  {% endfor %}],
+                      labels: xValues,
                       datasets: [{
-                        //label: '{{top_count}}  Sales for {{top_product}}',
-                        data: [{% for key,value in orders.items  %} {{value}},  {% endfor %}],
-                        borderWidth: 1
+                        backgroundColor: barColors,
+                        data: yValues
                       }]
                     },
                     options: {
-                      scales: {
-                        y: {
-                          beginAtZero: true
-                        }
+                      legend: {display: false},
+                      title: {
+                        display: true,
+                        text: "World Wine Production 2018"
                       }
                     }
                   });
-                </script> 
+                  </script>
+                  
+
+
+
+
+                <script>
+                    const ctx2 = document.getElementById('myChart');
+                    
+                  
+                    new Chart(ctx2, {
+                      type: 'pie',
+                      data: {
+                        labels: [{% for item in orders  %} '{{item}}',  {% endfor %}],
+                        datasets: [{
+                          //label: '{{top_count}}  Sales for {{top_product}}',
+                          data: [{% for key,value in orders.items  %} {{value}},  {% endfor %}],
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        scales: {
+                          y: {
+                            beginAtZero: true
+                          }
+                        }
+                      }
+                    });
+
+
+
+                  var ctx = document.getElementById('orderChart').getContext('2d');
+                  let orderData = document.getElementById('my-data').value;
+                  let parsedOrderData = JSON.parse(orderData); // Parse the JSON data
+              
+                  var orderChart = new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                          datasets: [{
+                              label: "Number of Orders",
+                              data: parsedOrderData, // Use the parsed data
+                              borderColor: 'rgba(75, 192, 192, 1)',
+                              borderWidth: 1,
+                              fill: true,
+                              backgroundColor: 'rgba(75, 192, 192, 0.2)'
+                          }]
+                      },
+                      options: {
+                          scales: {
+                              y: {
+                                  beginAtZero: true
+                              }
+                          }
+                      }
+                  });
+
+
+
+
+
+
+
+                  </script> 
+  
+  
+              
+                  
+
                 
+              
                 
+
+
+              
+            
+                
+               
       
 
 {% endblock custom_js %}

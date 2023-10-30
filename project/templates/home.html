@@ -39,8 +39,7 @@
                         </li>
                         
                         <li><a href="{% url 'contact'%}">Contact</a></li>
-                        {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
-                        <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
+                        
                     </ul>
                 </div>
 
@@ -51,12 +50,7 @@
         <!-- Header Meta Data -->
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
-            {% comment %} <div class="search-area">
-                <form action="#" method="post">
-                    <input type="search" name="search" id="headerSearch" placeholder="Type for search">
-                    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                </form>
-            </div> {% endcomment %}
+            
             <!-- Favourite Area -->
             <div class="favourite-area">
                 <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
@@ -100,7 +94,7 @@
                 <div class="row h-100 ">
                     <div class="col-6 w-50">
                         <div class="hero-content">
-                            <h6>asoss</h6>
+                            <h6>RealSporty</h6>
                             <h2 style="color: red;">New Collection</h2>
 
                             <a href="{% url 'whole_products' %}" class="btn essence-btn">view collection</a>
@@ -119,7 +113,7 @@
                         <div class="hero-content">
                             <h6>asoss</h6>
                             <h2 style ="color:red;">New Collection</h2>
-                            <a href="#" class="btn essence-btn">view collection</a>
+                            <a href="{% url 'whole_products'%}" class="btn essence-btn">view collection</a>
                         </div>
                     </div>
                 </div>
@@ -233,25 +227,11 @@
                             </button>
                         </form>
                          
-                            {% comment %} <a href=="{% url 'add_to_wishlist' item.id  %}" class="love-button" style="border: none; padding: 0;">
-                                <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
-                            </a> {% endcomment %}
-
-                            {% comment %} <a href="#" class="love-button" style="border: none; padding: 0;">
-                                    <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
-                                </a> {% endcomment %}
+                            
                             
                             <!-- Product Image -->
                             <div class="product-img">
-                                <!-- Form for adding to wishlist -->
-                                {% comment %} <form method="POST" action="{% url 'add_to_wishlist'  %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                    <button type="submit" class="btn essence-btn">Add to Wishlist </button>
-                                    <a href="#" class="love-button" style="border: none; padding: 0;">
-                                        <i class="fa fa-heart" style="font-size: 30px; color: #ed07a8;"></i>
-                                    </a>
-                                </form> {% endcomment %}
+                                
 
                                 <img style="width: 200px; height: 300px;" src="{{ item.image1.url }}" alt="">
                                 <!-- Hover Thumb -->
@@ -259,7 +239,7 @@
                             </div>
                             <!-- Product Description -->
                             <div class="product-description">
-                                {% comment %} <span>topshop</span> {% endcomment %}
+                                
                                 <a href="{% url 'single_p_details' item.id  %}">
                                     <h6>{{ item.name }}</h6>
                                 </a>

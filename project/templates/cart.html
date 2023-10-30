@@ -168,7 +168,7 @@
 									</tbody>
 								</table>
 							</div>
-							
+							<div id="message-container" style="color:Red"></div>
 							{% if cartobjs %}
 								<div class="text-center mt-4">
 									{% comment %} <button type="button" class="btn btn-danger delete-btn">Remove All Items</button> {% endcomment %}
@@ -213,6 +213,10 @@
 							{% endif %}
 						</div>
 					</div>
+
+
+					
+
 					{% comment %} ######################### {% endcomment %}
 					<div class="pagination">
 						<span class="step-links">
@@ -247,45 +251,36 @@
 
 	<script>
 		$(".choosequantity").change(function(){
-			var itemid=$(this).data("item-id");
-			var quantity=$(this).val();
-	
-	
+			var itemid = $(this).data("item-id");
+			var quantity = $(this).val();
+		
 			$.ajax({
-				url:"/quantityupdate/",
-				type:"GET",
-				data:{
-					itemid:itemid,
-					quantity:quantity
+				url: "/quantityupdate/",
+				type: "GET",
+				data: {
+					itemid: itemid,
+					quantity: quantity
 				},
-				success:function(response){
-					var result=response.sum;
-					var subtotal=response.subtotal;
-					$("#amount"+itemid).html(result);
-					$(".subtotal").html(subtotal)
-				
-					
-	
+				success: function(response) {
+					if (response.msg) {
+						var message = response.msg;
+		
+						// Display the error message
+						$("#message-container").text(message);
+					} else {
+						var result = response.sum;
+						var subtotal = response.subtotal;
+		
+						$("#amount" + itemid).html(result);
+						$(".subtotal").html(subtotal);
+					}
 				},
 				error: function(xhr, errmsg, err) {
-					
 					console.log(xhr.status + ": " + xhr.responseText);
-				  }
-	
-	
-	
-	
-	
-			})
-	
-	
-	
-		})
-	
-	
-	
-	
-	
+				}
+			});
+		});
+		
 	
 	</script>
 	

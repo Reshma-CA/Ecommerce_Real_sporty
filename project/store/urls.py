@@ -44,6 +44,7 @@ urlpatterns = [
     path("applycouponajax/",views.applycouponajax,name="applycouponajax"),
     # path('editsubmit/<int:myid>/', views.editsubmit, name='editsubmit'),
      path('generate_invoice/<int:id>', GenerateInvoice.as_view(), name='generate_invoice'),
+     path('custom-404/', views.custom_404_test, name='custom_404_test')
 
 
     # path("products/",views.category_products,name = "products"),

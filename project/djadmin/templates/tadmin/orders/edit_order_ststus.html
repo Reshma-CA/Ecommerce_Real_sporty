@@ -29,23 +29,27 @@ Add product Section
 {% block page_content %}
 
 
-<form class="p-5" method="POST" action=""> {% csrf_token %}
+<form class="p-5" method="POST" action="">
+   {% csrf_token %}
           
     <div class="form-group mt-2">
+     
+
       {% comment %} {% for item in content  %} {% endcomment %}
       {% comment %} <label for="username">Payment Type</label>
       <input value="{{item.ordertype}}" name="ordertype" type="text" class="form-control" id="username" placeholder="Enter username"> {% endcomment %}
       <label for="username">Status</label>
       {% comment %} <input value="{{item.orderstatus}}" name="orderstatus" type="number" class="form-control" id="username" placeholder="Enter username"> {% endcomment %}
       <select name="orderstatus" class="form-control" id="orderstatus">
-     
-        <option value="Ordered" {% if item.orderstatus == "Ordered" %}selected{% endif %}{% if item.orderstatus == "Shipped" or item.orderstatus == 'Cancelled' or item.orderstatus == 'Delivered' %}disabled{% endif %}>Ordered</option>
-        <option value="Shipped" {% if item.orderstatus == "Shipped" %}selected{% endif %}{% if item.orderstatus == "Cancelled"  or item.orderstatus == "Delivered" %}disabled{% endif %}>Shipped</option>
-        <option value="Delivered" {% if item.orderstatus == "Delivered" %}selected{% endif %}{%if item.orderstatus == "Cancelled" %}disabled{% endif %}>Delivered</option>
-        {% comment %} <option value="Cancelled" {% if item.orderstatus == "Cancelled" %}selected{% endif %}{% if item.orderstatus == "Delivered"%}{% endif %}>Cancelled</option> {% endcomment %}
-        <option value="Returned" {% if item.orderstatus == "Returned" %}selected{% endif %}>Returned</option>
-        
+        <option {% if orderobjs.orderstatus == "Pending" %}selected{% endif %} {% if orderobjs.orderstatus == "Returned" or orderobjs.orderstatus == "Delivered" or orderobjs.orderstatus == "Shipped" or orderobjs.orderstatus == "Ordered" %}disabled{% endif %}>Pending</option>
+        <option {% if orderobjs.orderstatus == "Ordered" %}selected{% endif %} {% if orderobjs.orderstatus == "Returned" or orderobjs.orderstatus == "Delivered" or orderobjs.orderstatus == "Shipped"  %}disabled{% endif %}>Ordered</option>
+        <option {% if orderobjs.orderstatus == "Shipped" %}selected{% endif %} {% if orderobjs.orderstatus == "Delivered" or orderobjs.orderstatus == "Returned" %}disabled{% endif %}>Shipped</option>
+        <option {% if orderobjs.orderstatus == "Delivered" %}selected{% endif %} {% if orderobjs.orderstatus == "Returned" %}disabled{% endif %}>Delivered</option>
+        <option {% if orderobjs.orderstatus == "Returned" %}selected{% endif %}>Returned</option>
     </select>
+    
+    
+    
     </div>
     <button type="submit" class="btn btn-primary mt-4">Update</button>
     <h5> {{error}}</h5>

@@ -9,7 +9,7 @@
         <!-- Classy Menu -->
         <nav class="classy-navbar" id="essenceNav">
             <!-- Logo -->
-            <a class="nav-brand" href="index.html"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
+            <a class="nav-brand" href="{% url 'home'%}"><img src="{% static '/img/core-img/Realsporty-logos_black.png'%}" width="125" height ="150" alt=""></a>
             <!-- Navbar Toggler -->
             <div class="classy-navbar-toggler">
                 <span class="navbarToggler"><span></span><span></span><span></span></span>
@@ -23,39 +23,26 @@
                 <!-- Nav Start -->
                 <div class="classynav">
                     <ul>
-                        <li><a href="#">Shop</a>
-                            <div class="megamenu">
-                                <ul class="single-mega cn-col-4">
-                                    <li class="title">Collections </li>
-                                    <li><a href="#">Badminton Racket &amp; Cock </a></li>
-                                    <li><a href="#">Cricket Bat &amp; Ball</a></li>
-                                    <li><a href="#">Football</a></li>
-                                    
-                                </ul>
-                              
-                                <div class="single-mega cn-col-4">
-                                    <img src="{% static '/img/bg-img/bgg-6.jpg'%}" alt="">
-                                </div>
-                            </div>
+                        <li><a href="{% url 'whole_products' %}">Shop</a>
+                            
                         </li>
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
-                                <li><a href="index.html">Home</a></li>
-                                <li><a href="shop.html">Shop</a></li>
-                                <li><a href="single-product-details.html">Product Details</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="blog.html">Blog</a></li>
-                                <li><a href="single-blog.html">Single Blog</a></li>
-                                <li><a href="regular-page.html">Regular Page</a></li>
-                                <li><a href="contact.html">Contact</a></li>
+                                <li><a href="{% url 'home'%}">Home</a></li>
+                                <li><a href="{% url 'whole_products'%}">Shop</a></li>
+                                
+                                <li><a href="{% url 'blog'%}">Blog</a></li>
+                                
+                                <li><a href="{% url 'contact'%}">Contact</a></li>
                             </ul>
                         </li>
                         
-                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="{% url 'contact'%}">Contact</a></li>
                         {% comment %} <li><a href="{% url 'signup'%}">Sign up</a></li>
                         <li><a href="{% url 'login-page'%}">login</a></li> {% endcomment %}
                     </ul>
                 </div>
+
                 <!-- Nav End -->
             </div>
         </nav>
@@ -63,24 +50,29 @@
         <!-- Header Meta Data -->
         <div class="header-meta d-flex clearfix justify-content-end">
             <!-- Search Area -->
-            <div class="search-area">
+            {% comment %} <div class="search-area">
                 <form action="#" method="post">
                     <input type="search" name="search" id="headerSearch" placeholder="Type for search">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-            </div>
+            </div> {% endcomment %}
             <!-- Favourite Area -->
             <div class="favourite-area">
-                <a href="#"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
+                <a href="{% url 'wishlist'%}"><img src="{% static '/img/core-img/heart.svg'%}" alt=""></a>
             </div>
             <!-- User Login Info -->
-            <!-- <div class="user-login-info">
-                <a href="#"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
-            </div> -->
+            <div class="user-login-info">
+                <a href="{% url 'userprofile'%}"><img src="{% static '/img/core-img/user.svg'%}" alt=""></a>
+            </div>
             <!-- Cart Area -->
             <div class="cart-area">
-                <a href="#" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>3</span></a>
+                <a href="{% url 'cart' %}" id="essenceCartBtn"><img src="{% static '/img/core-img/bag.svg'%}" alt=""> <span>{{ no_of_cart_items }}</span></a>
             </div>
+
+            <div class="user-login-info">
+              <a href="{% url 'logout' %}"><img src="{% static '/img/core-img/logout (1).png'%}" width="500" alt=""></a>
+             
+          </div>
         </div>
 
     </div>
@@ -121,15 +113,22 @@
 
     <!-- Single Product Description -->
     <div class="single_product_desc clearfix">
-        <span>mango</span>
-        <a href="cart.html">
+        <span></span>
+        <a href="#">
             <h2>{{product.name}}</h2>
+            
         </a>
-
+        <h2 style="color:Green">{{product.quantity}} quantity  available</h2>
         {% if product.discount_price %}
         <p class="product-price"><span class="old-price">$ {{product.price}}</span> ${{product.discount_price}}</p>
         {% else %}
         <p class="product-price"> ${{product.price}}</p>
+        {% if qu == 0 %}
+        <h2>{{ qu }} stocks available</h2>
+    {% else %}
+        <h2>Out of stock</h2>
+    {% endif %}
+    
 
 
         

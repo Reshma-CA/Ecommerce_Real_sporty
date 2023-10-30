@@ -213,7 +213,9 @@
                         
                         {% comment %} <p><strong>Shipping Address:</strong> {{ addressobj.house }}</p> {% endcomment %}
 
-                        <p><strong>Product Price:</strong> Rs. {{ finalprice }}</p>
+                        {% comment %} <p><strong>Product Price:</strong> Rs. {{ finalprice }}</p> {% endcomment %}
+                        {% comment %} <p><strong>Shipping Address:</strong> {{ addressobj.house }}, {{addressobj.locality}},{{addressobj.district}},{{addressobj.state}},{{addressobj.country}},{{addressobj.pincode}}</p> {% endcomment %}
+                        <p><strong>Product Price:</strong> Rs. {{ item.product.price }}</p>
                     </div>
                     <hr>
                     <form method="get" action="#">
