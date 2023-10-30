@@ -1228,10 +1228,13 @@ def otp_verify(request):
         if 'U_otp' in request.session and 'U_phone' in request.session:
             exact_otp = request.session['U_otp']
             phonenumber = request.session['U_phone']
+            
             if exact_otp == user_otp:
                 try:
                     
                     user = Customers.objects.get(phonenumber=phonenumber)
+                    # if user.isverified:
+
                     
                     if user is not None:
 
@@ -1364,8 +1367,8 @@ def forg_reset_password(request):
 
 from django.http import Http404
 
-def custom_404_test(request):
-    raise Http404("This is a custom 404 page test.")
+def custom_404_test(request,exception):
+    return render(request,"404.html",status=404)
 
 
     

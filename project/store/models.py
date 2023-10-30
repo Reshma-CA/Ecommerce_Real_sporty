@@ -14,6 +14,7 @@ class Customers(models.Model):
     password=models.CharField(max_length=200)
     repassword=models.CharField(max_length=200)
     isblocked=models.BooleanField(default=False)
+    isverified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
