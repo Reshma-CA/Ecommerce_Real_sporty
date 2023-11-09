@@ -158,7 +158,7 @@ def whole_products(request):
         products_with_offer.append(item)
 
     # Create a Paginator object
-    paginator = Paginator(products_with_offer, 3)  # Change 10 to your desired items per page
+    paginator = Paginator(products_with_offer, 10)  # Change 10 to your desired items per page
 
     page = request.GET.get('page')
     try:
@@ -184,7 +184,7 @@ def category_products(request, id):
     product_s = Products.objects.filter(category=category_s)
 
     # Create a Paginator object
-    paginator = Paginator(product_s, 2)  # Change 10 to your desired items per page
+    paginator = Paginator(product_s, 5)  # Change 10 to your desired items per page
 
     # Get the page number from the request
     page = request.GET.get('page')
@@ -284,28 +284,7 @@ def add_to_cart(request):
         return redirect('home')  # Redirect to the home page or handle this as needed
 
     
-# def view_cart(request):
-#     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:
-#         userobj = Customers.objects.get(username=request.session["username"])
-#         cartobjs = Cart.objects.filter(user=userobj)
 
-#         # Calculate the total for each cart item
-#         for item in cartobjs:
-#             item.total = item.quantity * item.product.price
-
-#         totalsum = sum(item.total for item in cartobjs)
-#         no_of_cart_items = cartobjs.count()
-#         wishlistobjs = Wishlist.objects.filter(user=userobj)
-#         no_of_wishlist_items = wishlistobjs.count()
-
-#         return render(request, "cart.html", {
-#             "cartobjs": cartobjs,
-#             "totalsum": totalsum,
-#             "no_of_cart_items": no_of_cart_items,
-#             "no_of_wishlist_items": no_of_wishlist_items
-#         })
-#     else:
-#         return redirect('login-page')
 @never_cache
 def view_cart(request):
     if "username" in request.session and not Customers.objects.get(username=request.session["username"]).isblocked:

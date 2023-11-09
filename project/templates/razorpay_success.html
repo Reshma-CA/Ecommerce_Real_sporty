@@ -218,7 +218,7 @@
                         <p><strong>Product Price:</strong> Rs. {{ item.product.price }}</p>
                     </div>
                     <hr>
-                    <form method="get" action="#">
+                    <form method="get" action="{% url 'generate_invoice' item.id%}">
                         <button type="submit" name="invoice" class="generate-invoice-button">Generate Invoice</button>
                     </form>
 

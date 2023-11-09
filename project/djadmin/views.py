@@ -52,18 +52,35 @@ from django.http import JsonResponse
 
 # Create your views here.
 
-  
+
 
 @never_cache
-def adminilogin(request):
-    if 'ausername' in request.session:
-        # Get all order objects
-        orderobjs = Orders_details.objects.all()
+def adminlogin(request):
 
-        # Calculate payment and orders
+    if 'ausername' in request.session:
+        return redirect('adminhome')
+    
+    if request.method=='POST':
+        uname=request.POST.get("username")
+        pword=request.POST.get("password")
+        res=authenticate(request,username=uname,password=pword)
+        if res is not None:
+            request.session['ausername']=uname # session creation
+            return redirect('adminhome')
+        else:
+            
+            messages.error(request,"Error in login! Invalid Login details!")
+            return render(request,"adminlogin.html")
+
+    return render(request,'adminlogin.html')
+
+@never_cache
+def adminhome(request):
+    if 'ausername' in request.session:
+        orderobjs = Orders_details.objects.all()
         payment = {}
         orders = {}
-        
+        # payment={}
         for item in orderobjs:
             if item.ordertype not in payment:
                 payment[item.ordertype] = 1
@@ -91,52 +108,26 @@ def adminilogin(request):
             day = (order['orderdate__day'] + 6) % 7  # Adjust for array indexing
             order_data[day] = order['order_count']
 
-        return render(request, 'tadmin/adminhome.html', {
+
+       
+        for item in orderobjs:
+            if item.ordertype not in payment:
+                payment[item.ordertype]=1
+            else:
+                payment[item.ordertype]+=1
+
+        return render(request, 'tadmin/adminhome.html',{
             "payment": payment,
             "orders": orders,
             "order_data": order_data,
         })
-    if request.method=='POST':
-        uname=request.POST.get("username")
-        pword=request.POST.get("password")
-        
-     
-        res=authenticate(request,username=uname,password=pword)
-
-        if res is not None:
-            request.session['ausername']=uname
-            orderobjs=Orders_details.objects.all()
-
-
-            orders={}
-            for item in orderobjs:
-                if item.product.name not in orders:
-                    orders[item.product.name]=1
-                else:
-                    orders[item.product.name]+=1
-       
-            payment={}
-            for item in orderobjs:
-                if item.ordertype not in payment:
-                    payment[item.ordertype]=1
-                else:
-                    payment[item.ordertype]+=1
-            print(payment)
-            return render(request,'tadmin/adminhome.html',{"payment":payment,"orders":orders})
-        
-        else:
-            
-            messages.error(request,"Error in login! Invalid Login details!")
-            return render(request,"adminlogin.html")
-    return render(request,'adminlogin.html')
-
-
+    return redirect('login')
+   
 
 def admin_logout(request):
     if 'ausername' in request.session:
         request.session.flush()
     return redirect('login')
-
 
 
 def adminusers(request):

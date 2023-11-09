@@ -3,8 +3,8 @@ from .import views
 
 
 urlpatterns = [
-    path("",views.adminilogin,name="login"),
-    # path("adhome/",views.adminhome,name="adminhome"),
+    path("",views.adminlogin,name="login"),
+    path("adhome/",views.adminhome,name="adminhome"),
     # path("apannel/",views.adminpannel,name="adminpannel"),
 
     # Users pannel
