@@ -1,4 +1,4 @@
-Happy to present my most recent work! The sports store is called Realsporty. Python Django was used to develop an entirely new e-commerce website.
+🚀 Happy to present my most recent work! The sports store is called Realsporty. Python Django was used to develop an entirely new e-commerce website.
 
 Main Features:
 ▪ User Signup using OTP
@@ -31,5 +31,4 @@ Also Used:Ajax,AWS,Nginx,Gunicorn,Git,Fast2SMS,Figma
 
 **Project Demo link** : https://youtu.be/119B4CPxW0A
 
-hashtag#fullstackdeveloper hashtag#ecommerce
-hashtag#djangodeveloper hashtag#python
+
