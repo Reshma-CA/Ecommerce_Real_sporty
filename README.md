@@ -28,7 +28,10 @@ Database: PostgreSQL
 Payment Gateway: Razorpay
 Also Used:Ajax,AWS,Nginx,Gunicorn,Git,Fast2SMS,Figma
 
+Developed Realsporty, a full-stack e-commerce web application for a sports merchandise store using Python and Django. The platform supports secure user authentication with OTP-based signup, personalized user profiles, and complete shopping workflows including cart, wishlist, checkout, and order management. Implemented multiple payment options such as Cash on Delivery (COD) and Razorpay for online transactions. Added business features like coupons, category-wise and product-level offers, PDF invoice generation, and order cancellation/return handling. Built an admin dashboard to manage products, categories, users, orders, and offers with full CRUD operations. Developed sales analytics including sales charts and reports to support business insights. The application was deployed on AWS with Nginx and Gunicorn, following standard deployment and version-control practices.
+
 
 **Project Demo link** : https://youtu.be/119B4CPxW0A
+
 
 
